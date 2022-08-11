@@ -1,0 +1,78 @@
+{
+    "Foundation 2019": {
+        "branch":"foundation-2019",
+        "project":"opennms"
+    },
+    "Foundation 2019 to Foundation 2020": {
+        "branch":"merge-foundation/foundation-2019-to-foundation-2020",
+        "project":"opennms"
+    },
+    "Foundation 2020": {
+        "branch":"foundation-2020",
+        "project":"opennms"
+    },
+    "Foundation 2020 to Foundation 2021": {
+        "branch":"merge-foundation/foundation-2020-to-foundation-2021",
+        "project":"opennms"
+    },
+    "Foundation 2021": {
+        "branch":"foundation-2021",
+        "project":"opennms"
+    },
+    "Foundation 2021 to Foundation 2022": {
+        "branch":"merge-foundation/foundation-2021-to-foundation-2022",
+        "project":"opennms"
+    },
+    "Foundation 2022": {
+        "branch":"foundation-2022",
+        "project":"opennms"
+    },
+    "Foundation 2022 to Horizion 30.x": {
+        "branch":"merge-foundation/foundation-2022-to-release-30.x",
+        "project":"opennms"
+    },
+    "Horizon 30.x": {
+        "branch":"release-30.x",
+        "project":"opennms"
+    },
+    "Horizon 30.x to develop": {
+        "branch":"merge-foundation/release-30.x-to-develop",
+        "project":"opennms"
+    },
+    "Horizon develop": {
+        "branch":"develop",
+        "project":"opennms"
+    },
+    "Foundation 2019 -> Meridian 2019.x": {
+        "branch":"from-foundation-2019",
+        "project":"opennms-prime"
+    },
+    "Meridian 2019.x": {
+        "branch":"release-2019.x",
+        "project":"opennms-prime"
+    },
+    "Foundation 2020 -> Meridian 2020.x": {
+        "branch":"from-foundation-2020",
+        "project":"opennms-prime"
+    },
+    "Meridian 2020.x": {
+        "branch":"release-2020.x",
+        "project":"opennms-prime"
+    },
+    "Foundation 2021 -> Meridian 2021.x": {
+        "branch":"from-foundation-2021",
+        "project":"opennms-prime"
+    },
+    "Meridian 2021.x": {
+        "branch":"release-2021.x",
+        "project":"opennms-prime"
+    },
+    "Foundation 2022 -> Meridian 2022.x": {
+        "branch":"from-foundation-2022",
+        "project":"opennms-prime"
+    },
+    "Meridian 2022.x": {
+        "branch":"release-2022.x",
+        "project":"opennms-prime"
+    }
+}

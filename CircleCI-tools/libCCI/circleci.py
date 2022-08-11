@@ -47,7 +47,6 @@ class circleci:
                 _url+="?page-token="+pageToken
         _data=self._navigateReturnResult(_url).json()
         if "next_page_token" in _data and _data["next_page_token"] and allpages:
-            print("","Next Page Token:",_data["next_page_token"])
             return self.retrievePipelines(organization_slug,branch,_data["next_page_token"],allpages=allpages,data=_data)
 
         return _data
@@ -78,9 +77,31 @@ class circleci:
 
     def retrieveCreditUsage(self,project_slug,workflow,branch):
         _url=self._apiUrl+"/insights/"+project_slug+"/workflows/"+ workflow
-        
         if branch:
             _url+="?branch="+branch
+        return self._navigateReturnResult(_url).json()
+
+    def retrieveFlakyTests(self,project_slug):
+        _url=self._apiUrl+"/insights/"+project_slug+"/flaky-tests"
+        return self._navigateReturnResult(_url).json()
+
+    def retrieveJobTimeseriesData(self,project_slug,workflow,branch="",granularity=""):
+        """Get timeseries data for all jobs within a workflow."""
+        _url=self._apiUrl+"/insights/time-series/"+project_slug+"/workflows/"+workflow+"/jobs"
+        if branch:
+            if "?" not in _url:
+                _url+="?"
+            elif "&" in _url:
+                _url+="&"
+            _url+="branch="+branch
+        
+        if granularity:
+            if "?" not in _url:
+                _url+="?"
+            elif "&" in _url:
+                _url+="&"
+            _url+="granularity="+granularity
+            
         return self._navigateReturnResult(_url).json()
 
     def myProfile(self):
@@ -91,3 +112,4 @@ class circleci:
         """User's Organizations """
         _url=self._apiUrl+"/me/collaborations"
         return self._navigateReturnResult(_url).json()
+

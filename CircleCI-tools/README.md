@@ -4,12 +4,13 @@ Helps with interacting with CircleCI.
 **Note:** Update `circleci.conf` file before running the script.
 * A token can be generated from `Personal API Tokens` page on CircleCI web interface.
 
-## Features:
+## `main.py` usage
+
+### Features:
 
 - List pipelines executed (and the job's status) of a branch
- 
 
-## Usage:
+### Usage:
 ```
 python main.py -h
 usage: CircleCI-tools [-h] --branch BRANCH [--items ITEMS]
@@ -21,3 +22,9 @@ options:
   --items ITEMS, -i ITEMS
                         Number of pipelines are returned. Defaults to 5
 ```
+
+## Other scripts
+| Script | Notes |
+|--------|-------|
+|`current_build_status.py`| Shows build status for branches |
+|`list_flaky_tests.py`| Lists the flaky tests for OpenNMS project |
