@@ -128,5 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-configuration/credential.conf
+
 .DS_Store
