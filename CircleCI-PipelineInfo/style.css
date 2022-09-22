@@ -1,0 +1,44 @@
+table {
+    border-collapse: collapse;
+    background: white;
+    color: black;
+    width: 400px;
+    box-shadow: 10px 10px 8px #969696d9;
+}
+
+th,
+td {
+    vertical-align: top;
+
+}
+
+td {
+    vertical-align: top;
+    background-color: #E9EBF9;
+}
+
+th {
+    background-color: #0081AD;
+    color: white
+}
+
+.number {
+    text-align: center;
+    font-size: 12px;
+    vertical-align: top;
+    border: 1px solid #969696d9;
+    padding: 0px;
+    width: 20px;
+    margin: 0px;
+    border-radius: 50%;
+
+}
+
+.numbuilds {
+    color: #0A0C1B;
+    vertical-align: middle;
+    font-weight: bold;
+    text-align: center;
+    z-index: 100;
+
+}
