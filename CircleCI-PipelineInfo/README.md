@@ -2,7 +2,7 @@
 * A token can be generated from `Personal API Tokens` page on CircleCI web interface.
 
 # 
-`main.py`; (**Note:** Currently OpenNMS repository is supported)
+`main.py`; (**Note:** At the moment we only support OpenNMS repository)
 ```
 usage: CircleCI [-h] [--branch BRANCH] [--all_branches] [--items ITEMS] [--branch_list] [--save SAVE]
 
