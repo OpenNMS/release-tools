@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Status</title>
+</head>
+
+<body>
+    <div class="header">
+        <div class="center">
+            <div class="logo">
+                <img width="128px" title="OpenNMS logo" src="OpenNMS_Horizontal-Logo_Dark-BG-60px.png" />
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-container">
+        <div>
+            <table>
+                <thead>
+                    <th>Branch</th>
+                    <th>Status</th>
+                </thead>
+                <tbody>
+                    #opennms#
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <table>
+                <thead>
+                    <th>Branch</th>
+                    <th>Status</th>
+                </thead>
+                <tbody>
+                    #opennms-prime#
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <table>
+                <thead>
+                    <th>Branch</th>
+                    <th>Status</th>
+                </thead>
+                <tbody>
+                    #poweredby#
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+</body>
+<style>
+    .center {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        height: 100%;
+        color: #E9EBF9;
+        flex-shrink: 0;
+    }
+
+    .logo {
+        width: 128px;
+        padding-left: 10px;
+        display: block;
+        color: #E9EBF9;
+
+    }
+
+    .header {
+        width: 100%;
+        height: 60px;
+        display: block;
+        color: #E9EBF9;
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, .2), 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12);
+        background-color: #E9EBF9;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1030;
+        background-color: #131736;
+        transition: transform .28s ease-in-out;
+    }
+
+    table {
+        width: auto;
+        border-collapse: separate;
+        text-indent: initial;
+        border-spacing: 2px;
+        border: 1px solid #000000;
+    }
+
+    .grid-container {
+        padding-top: 61px;
+        display: grid;
+        grid-auto-flow: column dense;
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    td {
+        display: table-cell;
+        border-color: #E9EBF9;
+        white-space: nowrap;
+    }
+
+    .success {
+        box-sizing: border-box;
+        min-width: 0px;
+        margin: 0px;
+        background-color: rgb(0, 137, 51);
+        color: rgb(255, 255, 255);
+        display: block;
+        -webkit-box-align: center;
+        text-align: center;
+        align-items: center;
+        font-weight: 500;
+        height: 28px;
+        border-radius: 22px;
+        padding: 0.25rem 0.25rem 0.25rem 0.25rem;
+    }
+
+    .failed {
+        box-sizing: border-box;
+        min-width: 0px;
+        margin: 0px;
+        background-color: rgb(150, 0, 8);
+        color: rgb(255, 255, 255);
+        display: block;
+        -webkit-box-align: center;
+        text-align: center;
+        font-weight: 500;
+        height: 28px;
+        border-radius: 22px;
+        padding: 0.25rem 0.25rem 0.25rem 0.25rem;
+    }
+
+    .running {
+        box-sizing: border-box;
+        min-width: 0px;
+        margin: 0px;
+        background-color: rgb(0, 120, 202);
+        color: rgb(255, 255, 255);
+        display: block;
+        -webkit-box-align: center;
+        text-align: center;
+        font-weight: 500;
+        height: 28px;
+        border-radius: 22px;
+        padding: 0.25rem 0.25rem 0.25rem 0.25rem;
+    }
+
+    .canceled {
+        box-sizing: border-box;
+        min-width: 0px;
+        margin: 0px;
+        background-color: rgb(203, 202, 203);
+        color: rgb(255, 255, 255);
+        display: flex;
+        -webkit-box-align: center;
+        align-items: center;
+        font-weight: 500;
+        height: 28px;
+        border-radius: 22px;
+        padding: 0.25rem 0.25rem 0.25rem 0.25rem;
+    }
+
+    .unknown {
+        box-sizing: border-box;
+        min-width: 0px;
+        margin: 0px;
+        background-color: rgb(185, 0, 202);
+        color: rgb(255, 255, 255);
+        display: flex;
+        -webkit-box-align: center;
+        align-items: center;
+        font-weight: 500;
+        height: 28px;
+        border-radius: 22px;
+        padding: 0.25rem 0.25rem 0.25rem 0.25rem;
+    }
+
+    .success-bg {
+        background-color: rgba(10, 137, 51, 0.118);
+    }
+
+    .failed-bg {
+        background-color: rgba(150, 0, 8, 0.118);
+    }
+
+    .running-bg {
+        background-color: rgba(0, 120, 202, 0.118);
+    }
+
+    .canceled-bg {
+        background-color: rgba(203, 202, 203, 0.118);
+    }
+
+    .unknown-bg {
+        background-color: rgba(185, 0, 202, 0.118);
+    }
+</style>
+
+</html>
