@@ -60,7 +60,17 @@ echo ""
 echo ""
 echo "Verify the changelogs and release note"
 echo "Current path: $(pwd)"
-echo "docs/modules/releasenotes/pages/changelog.adoc"
-echo "debian/changelog"
-echo "opennms-assemblies/minion/src/main/filtered/debian/changelog"
-echo "opennms-assemblies/sentinel/src/main/filtered/debian/changelog"
+
+if [ $ProductLine == Horizon ]; then
+   echo "docs/modules/releasenotes/pages/changelog.adoc"
+   echo "debian/changelog"
+   echo "opennms-assemblies/minion/src/main/filtered/debian/changelog"
+   echo "opennms-assemblies/sentinel/src/main/filtered/debian/changelog"
+else
+ # Assume we are on the Meridian Product Line
+ if [ ${VERSION%.*.*} -ge 2021 ]; then
+   echo "docs/modules/releasenotes/pages/changelog.adoc"
+ elif  [ ${VERSION%.*.*} -le 2020 ]; then
+   echo "opennms-doc/releasenotes/src/asciidoc/releasenotes/whatsnew-${VERSION%.*.*}.adoc"
+ fi 
+fi
