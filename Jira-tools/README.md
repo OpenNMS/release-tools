@@ -2,7 +2,8 @@
 Helps with interacting with JIRA server.
 
 **Note:** Update the credential configuration file before running the script.
-* Authtoken is a base64 encryption string (use `echo 'username:password' | base64` to generate it)
+You need create an API Token. See `https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/`
+* Authtoken is a base64 encryption string (use `echo 'username:APIToken' | base64` to generate it)
 
 ## Features:
 

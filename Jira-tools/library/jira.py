@@ -70,7 +70,7 @@ class jira:
         if os.path.exists(os.path.join(self.working_dir,"issues_withNextInFixedVersion.json")):
             os.remove(os.path.join(self.working_dir,"issues_withNextInFixedVersion.json"))
 
-        invalid_versionList=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","issues_with_next_fixedversion"),header={"Authorization":"Basic "+self.base_auth})
+        invalid_versionList=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","issues_with_next_fixedversion"),header={"Authorization":"Bearer "+self.base_auth})
 
         if invalid_versionList.status_code == 200:
             self.file_library.write_file(os.path.join(self.working_dir,"issues_withNextInFixedVersion.csv"),invalid_versionList.text)
@@ -119,7 +119,8 @@ class jira:
         for release in release_data:
             if release_name in release["name"]:
                 release_info=release
-                del release_info["operations"]
+                if "operations" in release_info:
+                    del release_info["operations"]
 
         project_info={} 
         for project in projects_list_data:
@@ -130,7 +131,7 @@ class jira:
 
         params = {'projectId':project_info['id'], 'maxResults':1000, 'jql':search_query}
 
-        _output=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","search"),param=params,header={"Authorization":"Basic "+self.base_auth,"Content-Type":"application/json"})
+        _output=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","search"),param=params,header={"Authorization":"Bearer "+self.base_auth,"Content-Type":"application/json"})
 
         if _output.status_code == 200:
             _output=_output.json()
@@ -142,18 +143,23 @@ class jira:
         return {"Operation":"Success","Filename":filename}
 
     def getReleases(self,print_info=False):
-        releases=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","releases"),header={"Authorization":"Basic "+self.base_auth,"Content-Type":"application/json"})
+        releases=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","releases"),header={"Authorization":"Bearer "+self.base_auth,"Content-Type":"application/json"})
         if releases.status_code == 200:
             self.file_library.save_json(self.release_path,releases.json())
+
             if print_info:
                 release_info=releases.json()
+                
                 for release in release_info:
                     if not release["released"]:
                         print(release["name"])
-                        print("","unmapped:",release["status"]["unmapped"]["count"])
-                        print("","toDo:",release["status"]["toDo"]["count"])
-                        print("","inProgress:",release["status"]["inProgress"]["count"])
-                        print("","complete:",release["status"]["complete"]["count"])
+                        if "issuesStatusForFixVersion" not in release:
+                            print("Not Sure about item status")
+                        else:
+                            print("","unmapped:",release["issuesStatusForFixVersion"]["unmapped"]["count"])
+                            print("","toDo:",release["issuesStatusForFixVersion"]["toDo"]["count"])
+                            print("","inProgress:",release["issuesStatusForFixVersion"]["inProgress"]["count"])
+                            print("","complete:",release["issuesStatusForFixVersion"]["complete"]["count"])
                         print()
         else:
             self.log.error("JIRA","Unable to retrieve release list ("+str(releases.status_code)+")")
@@ -163,7 +169,7 @@ class jira:
         filename="myItems.json"
         search_query=self.configuration_file_handler.get("Queries","my_items").replace("'","")
         params = {'maxResults':1000, 'jql':search_query}
-        _output=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","search"),param=params,header={"Authorization":"Basic "+self.base_auth,"Content-Type":"application/json"})
+        _output=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","search"),param=params,header={"Authorization":"Bearer "+self.base_auth,"Content-Type":"application/json"})
         if _output.status_code == 200:
             _output=_output.json()
             self.file_library.save_json(os.path.join(self.working_dir,filename),_output)
