@@ -79,31 +79,18 @@ class jira:
             return
         
     def getFixedIssuesWithMissingVersion(self):
-        if os.path.exists(os.path.join(self.working_dir,"issues_withNextInFixedVersion.csv")):
-            os.remove(os.path.join(self.working_dir,"issues_withNextInFixedVersion.csv"))
+        search_query=self.configuration_file_handler.get("Queries","issues_resolved_contain_next").replace("'","")
+        
+        params = {'maxResults':1000, 'jql':search_query}
+        _output=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","search"),param=params,header={"Content-Type":"application/json"},auth=self.auth)
+        data=_output.json()
 
         if os.path.exists(os.path.join(self.working_dir,"issues_withNextInFixedVersion.json")):
             os.remove(os.path.join(self.working_dir,"issues_withNextInFixedVersion.json"))
 
-        invalid_versionList=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","issues_with_next_fixedversion"),auth=self.auth)
-
-        if invalid_versionList.status_code == 200:
-            self.file_library.write_file(os.path.join(self.working_dir,"issues_withNextInFixedVersion.csv"),invalid_versionList.text)
-        else:
-            self.log.error("JIRA","Unable to retrieve issues with Next in the fixed Version field ("+str(invalid_versionList.status_code)+")")
-            return
-        
-        data={}
-        with open(os.path.join(self.working_dir,"issues_withNextInFixedVersion.csv"),"r") as f:
-            csvReader=csv.DictReader(f)
-        
-            for r in csvReader:
-                key=r["Issue key"]
-                data[key]=r
-        
-        self.file_library.save_json(os.path.join(self.working_dir,"issues_withNextInFixedVersion.json"),data)
-
-        return len(data)
+        if _output.status_code == 200:
+            self.file_library.save_json(os.path.join(self.working_dir,"issues_withNextInFixedVersion.json"),data)
+        return len(data['issues'])
 
     def getFixedIssues(self,release_name,project_name,filename="fixedIssues"):
         if os.path.exists(self.release_path):
@@ -194,3 +181,6 @@ class jira:
         else:
             self.log.error("JIRA","Unable to get your items("+str(_output.status_code)+")")
             return
+
+
+     
