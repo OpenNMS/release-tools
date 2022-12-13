@@ -37,14 +37,25 @@ class markup_helper:
             if  issue_type not in break_down:
                 break_down[issue_type]=[]
             
-            break_down[issue_type].append(entry["fields"]["summary"] +" (Issue http://issues.opennms.org/browse/"+entry["key"]+"["+entry["key"]+'])')
+            break_down[issue_type].append(entry["fields"]["summary"] +" (Issue https://issues.opennms.org/browse/"+entry["key"]+"["+entry["key"]+'])')
 
-        print("[releasenotes-changelog-"+release+"]")
-        print("= Release "+release)
+        print("[[releasenotes-changelog-"+release+"]]")
+        print()
+        release_year=int(release.split(".")[0])
+        if release_year<=2020:
+            _tmp="="*4
+        else:
+            _tmp="="*2
+        print(_tmp+" Release "+release)
         print()
         print()
         for entry in break_down:
-            print("== "+entry)
+            if release_year<=2020:
+                _tmp="="*5
+            else:
+                _tmp="="*3
+            print(_tmp+" "+entry)
+            print()
             for entry_2 in break_down[entry]:
                 print("*",entry_2)
             print()
