@@ -116,7 +116,7 @@ class jira:
 
 
         release_info={}
-        for release in release_data:
+        for release in release_data['values']:
             if release_name in release["name"]:
                 release_info=release
                 if "operations" in release_info:
