@@ -41,7 +41,10 @@ class markup_helper:
 
         print("[[releasenotes-changelog-"+release+"]]")
         print()
-        release_year=int(release.split(".")[0])
+        if "Meridian" in release:
+            release_year=int(release.split("-")[1].split(".")[0])
+        else:
+            release_year=int(release.split(".")[0])
         if release_year<=2020:
             _tmp="="*4
         else:
