@@ -1,8 +1,10 @@
 #!/bin/bash
 
-export VERSION=31.0.1
+export VERSION=31.0.2
+#export VERSION=2022.1.10
 
 export ProductLine=Horizon
+#export ProductLine=Meridian
 
 if [ $ProductLine == Horizon ]; then
    export REPO_URL=https://github.com/OpenNMS/opennms.git
@@ -22,8 +24,6 @@ cd $FolderName || exit
 mkdir $VERSION
 cd $VERSION || exit
 
-echo "Working Directory: $(pwd)" > $LOGDIR/$FolderName.txt 2>&1
-
 git clone $REPO_URL
 return_code=$?
 echo "Git Clone RC: $return_code" >> $LOGDIR/$FolderName.txt 2>&1
@@ -32,7 +32,9 @@ if [ $return_code -ne 0 ]; then
  exit $return_code
 fi 
 
-cd opennms || exit
+cd opennms* || exit
+echo "Working Directory: $(pwd)" > $LOGDIR/$FolderName.txt 2>&1
+
 git checkout master-${VERSION%.*.*} 
 return_code=$?
 echo "Git Checkout RC: $return_code" >> $LOGDIR/$FolderName.txt 2>&1

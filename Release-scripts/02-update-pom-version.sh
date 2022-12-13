@@ -1,8 +1,10 @@
 #!/bin/bash
 
-export VERSION=31.0.1
+export VERSION=31.0.2
+#export VERSION=2022.1.10
 
 export ProductLine=Horizon
+#export ProductLine=Meridian
 
 if [ $ProductLine == Horizon ]; then
    export FolderName=horizon
@@ -15,6 +17,7 @@ export LOGDIR=$(pwd)/logs
 
 cd $FolderName || exit
 cd $VERSION || exit
+cd opennms*
 
 echo "" >> $LOGDIR/$FolderName.txt 2>&1
 echo "=== Part 2 -- 02-set-version.sh ===" >> $LOGDIR/$FolderName.txt 2>&1
@@ -39,10 +42,13 @@ find . \
   fi
 
 perl -pi -e 's,"DEBUG","WARN",g' opennms-base-assembly/src/main/filtered/etc/log4j2.xml
+
 perl -pi -e 's, DEBUG , WARN ,g; s,= DEBUG,= WARN,g' container/karaf/src/main/filtered-resources/etc/org.ops4j.pax.logging.cfg
 
 perl -pi -e 's,("manager" *value=)"WARN",$1"DEBUG",' opennms-base-assembly/src/main/filtered/etc/log4j2.xml
+
 perl -pi -e 's,root level="WARN",root level="DEBUG",' opennms-base-assembly/src/main/filtered/etc/log4j2.xml
+
 perl -pi -e 's,defaultThreshold="WARN",defaultThreshold="DEBUG",' opennms-base-assembly/src/main/filtered/etc/log4j2.xml
 
 if [ $ProductLine == Horizon ]; then
