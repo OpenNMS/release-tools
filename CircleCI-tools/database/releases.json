@@ -31,25 +31,17 @@
         "branch":"merge-foundation/foundation-2022-to-release-30.x",
         "project":"opennms"
     },
-    "Horizon 30.x": {
-        "branch":"release-30.x",
+    "Horizon 31.x": {
+        "branch":"release-31.x",
         "project":"opennms"
     },
-    "Horizon 30.x to develop": {
-        "branch":"merge-foundation/release-30.x-to-develop",
+    "Horizon 31.x to develop": {
+        "branch":"merge-foundation/release-31.x-to-develop",
         "project":"opennms"
     },
     "Horizon develop": {
         "branch":"develop",
         "project":"opennms"
-    },
-    "Foundation 2019 -> Meridian 2019.x": {
-        "branch":"from-foundation-2019",
-        "project":"opennms-prime"
-    },
-    "Meridian 2019.x": {
-        "branch":"release-2019.x",
-        "project":"opennms-prime"
     },
     "Foundation 2020 -> Meridian 2020.x": {
         "branch":"from-foundation-2020",
@@ -74,5 +66,45 @@
     "Meridian 2022.x": {
         "branch":"release-2022.x",
         "project":"opennms-prime"
+    },
+    "Foundation 2023 -> Meridian 2023.x": {
+        "branch":"from-foundation-2023",
+        "project":"opennms-prime"
+    },
+    "Meridian 2023.x": {
+        "branch":"release-2023.x",
+        "project":"opennms-prime"
+    },
+    "OPA release-1.x":{
+        "branch":"release-1.x",
+        "project":"opennms-integration-api"
+    },
+    "OPA Develop":{
+        "branch":"develop",
+        "project":"opennms-integration-api"
+    },
+    "Grafana Plugin: 8.x":{
+        "branch":"release-8.x",
+        "project":"grafana-plugin"
+    },
+    "Grafana Plugin: develop":{
+        "branch":"develop",
+        "project":"grafana-plugin"
+    },
+    "Grafana Plugin: master":{
+        "branch":"master",
+        "project":"grafana-plugin"
+    },
+    "ALEC: 1.x":{
+        "branch":"release-1.x",
+        "project":"alec"
+    },
+    "ALEC: develop":{
+        "branch":"develop",
+        "project":"alec"
+    },
+    "OpenNMS.js: develop":{
+        "branch":"develop",
+        "project":"opennms-js"
     }
 }
