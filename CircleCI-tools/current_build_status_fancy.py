@@ -97,10 +97,11 @@ if __name__ == "__main__":
     print("Getting Data")
     _data=getData(releases_info)
 
-    with Live(generate_table(_data), refresh_per_second=5) as live:
-        print("Updated:",datetime.now(),"->",datetime.now()+timedelta(seconds=1800),";Default Sleep:",1800)
-        live.update(generate_table(_data))
-        time.sleep(1800)
-        _data=getData(releases_info)
+    delay=1800
 
-
+    with Live(generate_table(_data), refresh_per_second=4) as live:
+        while True:
+            print("Updated:",datetime.now(),"->",datetime.now()+timedelta(seconds=delay),";Default Sleep:",delay)
+            _data=getData(releases_info)
+            live.update(generate_table(_data))
+            time.sleep(delay)
