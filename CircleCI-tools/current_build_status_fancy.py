@@ -53,11 +53,12 @@ def getData(releases_info):
 
     return data
 
-def generate_table(data) -> Table:
+def generate_table(data,updated) -> Table:
     """Make a new table."""
     table = Table(show_lines=True)
     table.add_column("Release")
     table.add_column("Status")
+    table.add_row("[light_goldenrod2]Updated:"+str(updated[0]),"[light_goldenrod1]Next update:"+str(updated[1]))
 
     for row in data:
         value = data[row][0]
@@ -94,14 +95,16 @@ if __name__ == "__main__":
     
 
     releases_info=libfile.load_json("database/releases.json")
-    print("Getting Data")
+    now=datetime.now()
     _data=getData(releases_info)
 
     delay=1800
 
-    with Live(generate_table(_data), refresh_per_second=4) as live:
+    with Live(generate_table(_data,[now,now+timedelta(seconds=delay)]), refresh_per_second=4) as live:
         while True:
-            print("Updated:",datetime.now(),"->",datetime.now()+timedelta(seconds=delay),";Default Sleep:",delay)
+            now=datetime.now()
             _data=getData(releases_info)
-            live.update(generate_table(_data))
+            live.update(generate_table(_data,[now,now+timedelta(seconds=delay)]))
             time.sleep(delay)
+
+
