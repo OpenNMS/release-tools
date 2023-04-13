@@ -7,7 +7,7 @@
 # release's poll.
 
 product="Horizon"
-version="31.0.5"
+version="31.0.7"
 criterion="kind of cookie"
 
 candidate_names = [
@@ -62,7 +62,6 @@ candidate_names = [
     "Cuchuflís",
     "Coconut macaroon",
     "Cornish fairings",
-    "Coyotas",
     "Cream cracker",
     "Cuccidati",
     "Custard cream",
@@ -111,7 +110,6 @@ candidate_names = [
     "Linga",
     "Ma'amoul",
     "Macaroon",
-    "Macaron",
     "Mamón tostado",
     "Mandelbrot",
     "Maple leaf cream cookies",

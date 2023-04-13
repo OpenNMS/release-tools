@@ -7,7 +7,7 @@
 # release's poll.
 
 product="Meridian"
-version="2023.1.2"
+version="2023.1.3"
 criterion="Muppet"
 
 candidate_names = [
@@ -16,7 +16,6 @@ candidate_names = [
     "Beaker",
     "Bert",
     "Big Bird",
-    "Count von Count",
     "Dr. Bunsen Honeydew",
     "Dr. Teeth",
     "Elmo",
