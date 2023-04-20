@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div class="shadow">
+        <pre class="body">
+            <div class="table_container">
+                <table class="release_status">
+                    <thead>
+                        <th>Release</th>
+                        <th>Status</th>
+                    </thead>
+                    <tbody id="release_table_body">
+                    </tbody>
+                </table>
+            </div>
+            <div class="table_container">
+                <table class="hidden_table">
+                    <tbody id="details_table_body">
+
+                    </tbody>
+                    
+                </table>
+            </div>
+        
+        </pre>
+    </div>
+    >
+
+    <script src="circleci.js">
+    </script>
+    <script>
+        function addRow(release, status) {
+            table = document.getElementById("release_table_body");
+            if (table.rows.length <= 0) {
+                row_count = 0;
+            } else {
+                row_count = table.rows.length;
+            }
+
+            var row = table.insertRow(row_count);
+
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            if (status == "failed" || status == "failing") {
+                color = "#f44336";
+            } else if (status == "success") {
+                color = "#3FA532";
+            }
+            else if (status == "running") {
+                color = "#005fff";
+            } else {
+                color = "#eeeeee";
+            }
+            cell1.innerHTML = "<p style='color:" + color + "'>" + release + "</p>";
+            cell2.innerHTML = "<p style='color:" + color + "'>" + status + "</p>";
+
+        }
+
+        function getJobDetails(circleci_handler, key, slug, job_numbers) {
+            if (job_numbers.length < 1) {
+                return
+            }
+            job_numbers.forEach(element => {
+                circleci_handler.getWorkflowJobs(element).then((res) => {
+                    table = document.getElementById("details_table_body");
+                    if (table.rows.length <= 0) {
+                        row_count = 0;
+                    } else {
+                        row_count = table.rows.length;
+                    }
+                    var row = table.insertRow(row_count);
+                    var cell1 = row.insertCell(0);
+                    res["items"].forEach((te) => {
+                        if (te["status"] == "failed" || te["status"] == "failing") {
+                            cell1.innerHTML = "<p>[" + key + "]</p><p>  " + te["name"] + " -> " + te["status"] + "</p>";
+                        }
+                    })
+                })
+            })
+        }
+
+        releases = {
+            "Foundation 2019": {
+        "branch":"foundation-2019",
+        "project":"opennms"
+    },
+    "Foundation 2019 to Foundation 2020": {
+        "branch":"merge-foundation/foundation-2019-to-foundation-2020",
+        "project":"opennms"
+    },
+    "Foundation 2020": {
+        "branch":"foundation-2020",
+        "project":"opennms"
+    },
+    "Foundation 2020 to Foundation 2021": {
+        "branch":"merge-foundation/foundation-2020-to-foundation-2021",
+        "project":"opennms"
+    },
+    "Foundation 2021": {
+        "branch":"foundation-2021",
+        "project":"opennms"
+    },
+    "Foundation 2021 to Foundation 2022": {
+        "branch":"merge-foundation/foundation-2021-to-foundation-2022",
+        "project":"opennms"
+    },
+    "Foundation 2022": {
+        "branch":"foundation-2022",
+        "project":"opennms"
+    },
+    "Foundation 2022 to Foundation 2023": {
+        "branch":"merge-foundation/foundation-2022-to-foundation-2023",
+        "project":"opennms"
+    },
+    "Foundation 2023 to Horizion 31.x": {
+        "branch":"merge-foundation/foundation-2023-to-release-31.x",
+        "project":"opennms"
+    },
+    "Horizon 31.x": {
+        "branch":"release-31.x",
+        "project":"opennms"
+    },
+    "Horizon 31.x to develop": {
+        "branch":"merge-foundation/release-31.x-to-develop",
+        "project":"opennms"
+    },
+    "Horizon develop": {
+        "branch":"develop",
+        "project":"opennms"
+    },
+    "OPA release-1.x":{
+        "branch":"release-1.x",
+        "project":"opennms-integration-api"
+    },
+    "OPA Develop":{
+        "branch":"develop",
+        "project":"opennms-integration-api"
+    },
+    "Grafana Plugin: 8.x":{
+        "branch":"release-8.x",
+        "project":"grafana-plugin"
+    },
+    "Grafana Plugin: develop":{
+        "branch":"develop",
+        "project":"grafana-plugin"
+    },
+    "Grafana Plugin: master":{
+        "branch":"master",
+        "project":"grafana-plugin"
+    },
+    "ALEC: develop":{
+        "branch":"develop",
+        "project":"alec"
+    },
+    "OpenNMS.js: develop":{
+        "branch":"develop",
+        "project":"opennms-js"
+    },
+    "Velocloud: main":{
+        "branch":"main",
+        "project":"opennms-velocloud-plugin"
+    },
+    "Velocloud: release-1.x":{
+        "branch":"release-1.x",
+        "project":"opennms-velocloud-plugin"
+    }
+        }
+
+
+        const circleci_handler = new circleci();
+
+
+        for (let key of Object.keys(releases).sort()) {
+            let _connection = circleci_handler.getPipeline("github/OpenNMS/" + releases[key]["project"], branch = releases[key]["branch"]);
+            _connection.then(tes => {
+                let failed_jobs = [];
+                let data = tes["items"][0]["id"];
+                circleci_handler.getPipelineWorkflow(data).then(res => (
+                    rele = "not sure",
+                    res["items"].forEach(element => {
+                        if (element["status"] == "failed" || element["status"] == "failing") {
+                            failed_jobs.push(element["id"])
+                            rele = element["status"]
+                        } else {
+                            if (rele != "failed" && rele != "failing" && element["status"] != "failed" && element["status"] != "failing") {
+                                rele = element["status"]
+                            }
+                        }
+                    }),
+                    getJobDetails(circleci_handler, key, releases[key]["project"], failed_jobs),
+                    addRow(key, rele)
+                ))
+            });
+        }
+    </script
+</body>
+</html>

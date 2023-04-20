@@ -27,8 +27,12 @@
         "branch":"foundation-2022",
         "project":"opennms"
     },
-    "Foundation 2022 to Horizion 30.x": {
-        "branch":"merge-foundation/foundation-2022-to-release-30.x",
+    "Foundation 2022 to Foundation 2023": {
+        "branch":"merge-foundation/foundation-2022-to-foundation-2023",
+        "project":"opennms"
+    },
+    "Foundation 2023 to Horizion 31.x": {
+        "branch":"merge-foundation/foundation-2023-to-release-31.x",
         "project":"opennms"
     },
     "Horizon 31.x": {
@@ -106,5 +110,14 @@
     "OpenNMS.js: develop":{
         "branch":"develop",
         "project":"opennms-js"
+    },
+    "Velocloud: main":{
+        "branch":"main",
+        "project":"opennms-velocloud-plugin"
+    },
+    "Velocloud: release-1.x":{
+        "branch":"release-1.x",
+        "project":"opennms-velocloud-plugin"
     }
+
 }
