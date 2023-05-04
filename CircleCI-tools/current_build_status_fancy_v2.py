@@ -17,11 +17,19 @@ from rich.syntax import Syntax
 from rich.text import Text
 import re
 import json
+import argparse
+
 configparser_handler=configparser.ConfigParser()
 circleci_handler=""
 
 console_message_boxEntries=[]
 
+
+parse = argparse.ArgumentParser("CircleCI Release Build Status")
+parse.add_argument('-a',"--showAllBuilds",action='store_false',help="Show all builds, regardless of their status")
+
+args=parse.parse_args()
+ShowFailedBuildsOnly=args.showAllBuilds
 
 def make_layout() -> Layout:
     """Define the layout."""
@@ -36,7 +44,7 @@ def make_layout() -> Layout:
         Layout(name="side"),
         Layout(name="body", ratio=1, minimum_size=50),
     )
-    layout["side"].split(Layout(name="box1"))#, Layout(name="box2"))
+    layout["side"].split(Layout(name="box1"))
     return layout
 
 
@@ -103,38 +111,26 @@ def getPipelinesInformation(maxitems=1,branch="develop",prefix="",project_slug="
     last_status=""
     prefix+=" "
     overall_status=""
-    _build={}
+    jobs={}
 
-
-
-    for a in _pipelines['items'][0:1]:
-        _pipelines_workflows=circleci_handler.retrievePipelineWorkflow(str(a['id']))
-        #with open("workspace/"+branch.replace("/","__")+".json","w") as f:
-        #    json.dump(_pipelines_workflows,f)
-
-        _pipelines_info=_pipelines_workflows['items']   
-        for b in _pipelines_info:
-            _build[b["name"]]={"status":b['status'],"jobs":[]}
-            if b['status'] in ["failed","failing"] and (b["name"] not in _build or _build[b["name"]]["status"] not in "success"):
-                last_status="failed"
-                _jobs=circleci_handler.retrieveWorkflowJobs(b['id'])
-                _build[b["name"]]["jobs"]=_jobs["items"]
-
-            elif b['status'] in ["running"]:
-                if last_status not in ["failed"]:
-                    last_status="running"
-                _jobs=circleci_handler.retrieveWorkflowJobs(b['id'])
-                _build[b["name"]]["jobs"]=_jobs["items"]
-                for j in _jobs['items']:
-                    if j['status'] not in ["running",'blocked'] and overall_status not in ["failed","failing"]:
-                        overall_status=j['status']
-            elif b['status'] in ["success"]:
-                if last_status not in ["failed","running","cancelled"]:
-                    last_status="success"
+    for p in _pipelines['items'][0:1]:
+        _pipelines_workflows=circleci_handler.retrievePipelineWorkflow(str(p['id']))
+        for pw in _pipelines_workflows["items"]:
+            
+            if pw['name'] not in jobs:
+                jobs[pw['name']]={"status":pw['status'],"created_at":pw['created_at'],"stopped_at":pw["stopped_at"],"id":pw["id"]}
             else:
-                last_status=b['status'] 
-    
-    return [last_status,overall_status,_build]
+                if pw['status'] not in jobs[pw['name']]["status"]:
+                    if pw['created_at']>jobs[pw['name']]["created_at"]:
+                        jobs[pw['name']]={"status":pw['status'],"created_at":pw['created_at'],"stopped_at":pw["stopped_at"],"id":pw["id"]}
+        
+    last_status="success"
+    sub_jobs=""
+    for j in jobs:
+        if "success" not in jobs[j]['status']:
+            last_status=jobs[j]['status']
+            sub_jobs=circleci_handler.retrieveWorkflowJobs(jobs[j]['id'])["items"]
+    return [last_status,overall_status,sub_jobs]
 
 def getData(releases_info):
     data={}
@@ -143,8 +139,10 @@ def getData(releases_info):
             project_slug="github/OpenNMS/"+releases_info[release]["project"]
 
         status=getPipelinesInformation(project_slug=project_slug,branch=releases_info[release]["branch"])
-
-        data[release]=status
+        if status[0] not in 'success' and ShowFailedBuildsOnly:
+            data[release]=status
+        elif not ShowFailedBuildsOnly:
+            data[release]=status
 
     return data
 
@@ -167,14 +165,14 @@ def generate_table(data,updated) -> Table:
             _tmp_msg=""
             web_url=""
             for s in data[row][-1]:
-                if data[row][-1][s]["status"] in "failed":
-                    _tmp_msg+="\t"+s+" -> "+data[row][-1][s]["status"]+"\n"
-                    for j in data[row][-1][s]["jobs"]:
-                        if j["status"] in ["failing","failed"]:
-                            _tmp_url=circleci_handler.retrieveJob(j["project_slug"],j["job_number"])
-                            if "web_url" in _tmp_url:
-                                web_url="Link::"+_tmp_url["web_url"]+"::Link "
-                            _tmp_msg+="\t\t"+web_url+""+j["name"]+" -> "+j["status"]+"\n"
+                if s["status"] in "failed":
+                    _tmp_msg+="\t"+s['name']+" -> "+s["status"]+"\n"
+                    #for j in data[row][-1][s]["jobs"]:
+                    #    if j["status"] in ["failing","failed"]:
+                    #        _tmp_url=circleci_handler.retrieveJob(j["project_slug"],j["job_number"])
+                    #        if "web_url" in _tmp_url:
+                    #            web_url="Link::"+_tmp_url["web_url"]+"::Link "
+                    #        _tmp_msg+="\t\t"+web_url+""+j["name"]+" -> "+j["status"]+"\n"
             console_message_boxEntries.append(row+"\n"+_tmp_msg)
         elif value in 'running':
             _color="[turquoise2]"
@@ -230,7 +228,10 @@ if __name__ == "__main__":
     console = Console()
     layout = make_layout()
     layout["header"].update(Header())
-    layout["box1"].update(Panel(generate_table(_data,[now,now+timedelta(seconds=delay)]),title="Release Status", border_style="red"))
+    release_status_title="Release Status"
+    if ShowFailedBuildsOnly:
+        release_status_title+=" (Filter: Non-Successful builds only)"
+    layout["box1"].update(Panel(generate_table(_data,[now,now+timedelta(seconds=delay)]),title=release_status_title, border_style="red"))
     layout["body"].update(mainBox())
     layout["footer"].update(progress_table)
 
@@ -244,12 +245,5 @@ if __name__ == "__main__":
                     now=datetime.now()
                     _data=getData(releases_info)
                     job_progress.reset(job.id)
-                    layout["box1"].update(Panel(generate_table(_data,[now,now+timedelta(seconds=delay)]),title="Release Status", border_style="red"))
+                    layout["box1"].update(Panel(generate_table(_data,[now,now+timedelta(seconds=delay)]),title=release_status_title, border_style="red"))
                     layout["body"].update(mainBox())
-            
-
-
-
-
-
-
