@@ -74,6 +74,7 @@ def mainBox() -> Panel:
             else:
                 web_url_text=""
             tmp=Text("\n "+icon+" "+cmb+""+web_url_text+"\n"+"__"*10+"\n", "green")
+            tmp.highlight_regex(r">>(.*)<<", "bold yellow")
             tmp.highlight_regex(r"->", "bold red")
             tmp.highlight_regex(r"\\", "bold cyan")
             console_output_message+=tmp
@@ -180,6 +181,21 @@ def generate_table(data,updated) -> Table:
                 _msg="Running ("+data[row][1]+")"
             else:
                 _msg="Running"
+            _tmp_msg=""
+            _tmp_waiting=0
+            for j in data[row][-1]:
+                if j["status"] in "running":
+                    _tmp_msg+="\t"+j["name"]+" -> "+j["status"]+"\n"
+                else:
+                    _tmp_waiting+=1
+
+            
+            if _tmp_waiting>0:
+                _tmp_msg+="\t>> "+str(_tmp_waiting)+" << job(s) is/are waiting for current job(s) to finish\n"
+
+            console_message_boxEntries.append(row+"\n"+_tmp_msg)
+
+
 
         else:
             _color="[bright_magenta]"
