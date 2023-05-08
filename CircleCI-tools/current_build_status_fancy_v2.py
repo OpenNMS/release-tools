@@ -160,20 +160,24 @@ def generate_table(data,updated) -> Table:
         if value in 'success':
             _color="[green3]"
             _msg="Successful"
-        elif value in 'failed':
+        elif value in ['failed','failing']:
             _color="[bright_red]"
             _msg="Failed"
             _tmp_msg=""
-            web_url=""
+            _tmp_blocked=0
+            seen_jobs=[]
             for s in data[row][-1]:
                 if s["status"] in "failed":
-                    _tmp_msg+="\t"+s['name']+" -> "+s["status"]+"\n"
-                    #for j in data[row][-1][s]["jobs"]:
-                    #    if j["status"] in ["failing","failed"]:
-                    #        _tmp_url=circleci_handler.retrieveJob(j["project_slug"],j["job_number"])
-                    #        if "web_url" in _tmp_url:
-                    #            web_url="Link::"+_tmp_url["web_url"]+"::Link "
-                    #        _tmp_msg+="\t\t"+web_url+""+j["name"]+" -> "+j["status"]+"\n"
+                    for j in data[row][-1]:
+                        if j["status"] not in ["success","blocked"]:
+                            if j["name"] not in seen_jobs:
+                                _tmp_msg+="\t"+j["name"]+" -> "+j["status"]+"\n"
+                                seen_jobs.append(j["name"])
+                        elif j["status"] in ["blocked"]:
+                            _tmp_blocked+=1
+
+            if _tmp_blocked>0:
+                _tmp_msg+="\t>> "+str(_tmp_blocked)+" << job(s) is/are blocked because of the failure(s)\n"
             console_message_boxEntries.append(row+"\n"+_tmp_msg)
         elif value in 'running':
             _color="[turquoise2]"
