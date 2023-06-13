@@ -27,6 +27,8 @@ class markup_helper:
                 print(entry,entry["Summary"])
 
     def print_issues(self,filename,release="",output_filename=""):
+        meridian=False
+        horizon=False
         with open(filename,"r") as f:
             data=json.load(f)
 
@@ -43,9 +45,12 @@ class markup_helper:
         print()
         if "Meridian" in release:
             release_year=int(release.split("-")[1].split(".")[0])
+            meridian=True
         else:
             release_year=int(release.split(".")[0])
-        if release_year<=2020:
+            horizon=True
+
+        if (meridian and release_year<=2020) or (horizon and release_year<=29):
             _tmp="="*4
         else:
             _tmp="="*2
@@ -53,7 +58,7 @@ class markup_helper:
         print()
         print()
         for entry in break_down:
-            if release_year<=2020:
+            if (meridian and release_year<=2020) or (horizon and release_year<=29):
                 _tmp="="*5
             else:
                 _tmp="="*3
