@@ -28,3 +28,4 @@ options:
 |--------|-------|
 |`current_build_status.py`| Shows build status for branches |
 |`list_flaky_tests.py`| Lists the flaky tests for OpenNMS project |
+|`current_build_status_fancy_v2.py`| A fancy version of https://opennms.github.io/opennms/ that runs in the console |
