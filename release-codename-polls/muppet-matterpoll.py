@@ -7,17 +7,14 @@
 # release's poll.
 
 product="Meridian"
-version="2023.1.3"
+version="2023.1.7"
 criterion="Muppet"
 
 candidate_names = [
     "Abby Cadabby",
     "Animal",
-    "Beaker",
     "Bert",
     "Big Bird",
-    "Dr. Bunsen Honeydew",
-    "Dr. Teeth",
     "Elmo",
     "Ernie",
     "Floyd Pepper",
@@ -29,7 +26,6 @@ candidate_names = [
     "Julia",
     "Lips",
     "Miss Piggy",
-    "Mr. Snuffleupagus",
     "Murray Monster",
     "Oscar the Grouch",
     "Pepe the King Prawn",
