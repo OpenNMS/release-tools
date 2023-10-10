@@ -9,7 +9,7 @@ import random
 # release's poll.
 
 product="Horizon"
-version="32.0.2"
+version="32.0.3"
 criterion="music genre"
 count=20
 
@@ -30,7 +30,6 @@ candidate_names = [
     "Abstract Hip Hop",
     "Abstract Idm",
     "Abstractro",
-    "A Cappella",
     "Accordeon",
     "Accordion",
     "Accordion Band",
@@ -193,7 +192,6 @@ candidate_names = [
     "Anime Game",
     "Animegrind",
     "Anime Latino",
-    "Anime Lo-fi",
     "Anime Phonk",
     "Anime Piano",
     "Anime Rap",
@@ -905,7 +903,6 @@ candidate_names = [
     "Caucasian Classical",
     "Caucasian Classical Piano",
     "Caucasian Folk",
-    "Cavernous Death Metal",
     "Ccm",
     "Cdmx Indie",
     "Cdo Indie",
