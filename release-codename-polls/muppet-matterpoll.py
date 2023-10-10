@@ -7,7 +7,7 @@
 # release's poll.
 
 product="Meridian"
-version="2023.1.7"
+version="2023.1.8"
 criterion="Muppet"
 
 candidate_names = [
@@ -29,7 +29,6 @@ candidate_names = [
     "Murray Monster",
     "Oscar the Grouch",
     "Pepe the King Prawn",
-    "Rizzo the Rat",
     "Roosevelt Franklin",
     "Rosita",
     "Rowlf the Dog",
@@ -41,8 +40,7 @@ candidate_names = [
     "The Swedish Chef",
     "The Two-Headed Monster",
     "Waldorf",
-    "Walter",
-    "Zoot"
+    "Walter"
 ]
 
 poll_string = '/poll "First round: Which {} should be the codename for {} {}? Please vote for exactly one." '.format(criterion, product, version)

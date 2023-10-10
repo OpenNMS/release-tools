@@ -9,7 +9,7 @@ import random
 # release's poll.
 
 product="Horizon"
-version="32.0.3"
+version="32.0.4"
 criterion="music genre"
 count=20
 
@@ -1150,7 +1150,6 @@ candidate_names = [
     "Classic Disco Polo",
     "Classic Dubstep",
     "Classic Dutch Pop",
-    "Classic Eurovision",
     "Classic Female Blues",
     "Classic Finnish Pop",
     "Classic Finnish Rock",
