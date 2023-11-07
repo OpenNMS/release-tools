@@ -9,7 +9,7 @@ import random
 # release's poll.
 
 product="Horizon"
-version="32.0.4"
+version="32.0.5"
 criterion="music genre"
 count=20
 
@@ -1600,7 +1600,6 @@ candidate_names = [
     "Deep Space Rock",
     "Deep Sunset Lounge",
     "Deep Surf Music",
-    "Deep Swedish Rock",
     "Deep Symphonic Black Metal",
     "Deep Talent Show",
     "Deep Tech House",

@@ -7,7 +7,7 @@
 # release's poll.
 
 product="Meridian"
-version="2023.1.8"
+version="2023.1.9"
 criterion="Muppet"
 
 candidate_names = [
@@ -37,7 +37,6 @@ candidate_names = [
     "Sherlock Hemlock",
     "Statler",
     "The Martians",
-    "The Swedish Chef",
     "The Two-Headed Monster",
     "Waldorf",
     "Walter"
