@@ -18,13 +18,13 @@ class markup_helper:
             if prefix:
                 if "fields" in entry:
                     if "summary" in entry["fields"]:
-                        print(prefix,entry["key"],entry["fields"]["summary"])
+                        print(prefix,entry["key"],entry["fields"]["summary"].strip())
                     else:
-                        print(prefix,entry,entry["fields"]["Summary"])
+                        print(prefix,entry,entry["fields"]["Summary"].strip())
                 else:
-                    print(prefix,entry,data[entry]["Summary"])
+                    print(prefix,entry,data[entry]["Summary"].strip())
             else:
-                print(entry,entry["Summary"])
+                print(entry,entry["Summary"].strip())
 
     def print_issues(self,filename,release="",output_filename=""):
         meridian=False
@@ -39,7 +39,7 @@ class markup_helper:
             if  issue_type not in break_down:
                 break_down[issue_type]=[]
             
-            break_down[issue_type].append(entry["fields"]["summary"] +" (Issue https://issues.opennms.org/browse/"+entry["key"]+"["+entry["key"]+'])')
+            break_down[issue_type].append(entry["fields"]["summary"].strip() +" (Issue https://issues.opennms.org/browse/"+entry["key"]+"["+entry["key"]+'])')
 
         print("[[releasenotes-changelog-"+release+"]]")
         print()
