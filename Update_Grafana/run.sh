@@ -11,9 +11,27 @@ then
  exit
 fi
 
-rpmfile=$(find downloads -name "*.rpm")
+
+if [ $rpmcount -eq 0 ]
+then 
+ echo "We were unable to find Grafana RPM. Exiting!"
+ exit
+fi
+
+
+cd downloads || exit
+
+rpmfile=$(find . -name "*.rpm")
 
 echo "We want to process ${rpmfile}"
+
+
+
+if ! sha256sum -c "${rpmfile}.sha256";
+then 
+echo "Checksum failed! Exiting!"
+exit
+fi
 
 # Place logic to re-sign the rpm files
 # rpmsign --resign ${rpmfile}
