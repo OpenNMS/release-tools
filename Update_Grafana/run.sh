@@ -11,6 +11,7 @@ then
  exit
 fi
 
+
 if [ $rpmcount -eq 0 ]
 then 
  echo "We were unable to find Grafana RPM. Exiting!"
