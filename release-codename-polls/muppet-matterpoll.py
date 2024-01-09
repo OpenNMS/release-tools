@@ -7,7 +7,7 @@
 # release's poll.
 
 product="Meridian"
-version="2023.1.11"
+version="2023.1.12"
 criterion="Muppet"
 
 candidate_names = [
@@ -26,8 +26,6 @@ candidate_names = [
     "Lips",
     "Miss Piggy",
     "Murray Monster",
-    "Oscar the Grouch",
-    "Pepe the King Prawn",
     "Roosevelt Franklin",
     "Rosita",
     "Rowlf the Dog",

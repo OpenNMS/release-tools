@@ -9,7 +9,7 @@ import random
 # release's poll.
 
 product="Horizon"
-version="32.0.5"
+version="32.0.6"
 criterion="music genre"
 count=20
 
@@ -700,7 +700,6 @@ candidate_names = [
     "Brazilian Techno",
     "Brazilian Thrash Metal",
     "Breakbeat",
-    "Breakcore",
     "Breaks",
     "Brega",
     "Brega Funk",
