@@ -7,7 +7,7 @@
 # release's poll.
 
 product="Meridian"
-version="2023.1.9"
+version="2023.1.11"
 criterion="Muppet"
 
 candidate_names = [
@@ -19,7 +19,6 @@ candidate_names = [
     "Ernie",
     "Floyd Pepper",
     "Fozzie Bear",
-    "Gonzo",
     "Grover",
     "Guy Smiley",
     "Janice",
