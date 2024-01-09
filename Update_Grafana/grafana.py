@@ -21,7 +21,7 @@ class Grafana:
         if len(self._GRAFANA_VERSIONS)>0:
             return self._GRAFANA_VERSIONS
         
-        stable_versions=json.loads(self._https_connector.getPage("https://grafana.com/api/grafana/versions"))
+        stable_versions=json.loads(self._https_connector.getPage(self._URL_GRAFANA_VERSIONS))
         self._GRAFANA_TMP_DATA=stable_versions
         for entry in stable_versions["items"]:
             self._GRAFANA_VERSIONS.append(entry["version"])
@@ -79,7 +79,7 @@ class Grafana:
         return item
 
     def DownloadPackage(self,version,package_type="rpm",package_arch="amd64",download_folder="downloads")->None:
-        package_content=json.loads(self._https_connector.getPage("https://grafana.com/api/grafana/versions/"+version+"/packages"))
+        package_content=json.loads(self._https_connector.getPage(self._URL_GRAFANA_PACKAGE.replace("##_REPLACE_ME_WITH_VERSION_##",version)))
         for pkg in package_content["items"]:
             _pkg_url=pkg["url"]
             _pkg_sha=pkg["sha256"].strip()
@@ -95,8 +95,3 @@ class Grafana:
                 with open(download_folder+"/"+filename.replace(".rpm","")+".json","w") as f:
                     json.dump(pkg,f,indent=4)
                 break
-
-
-        
-
-        
