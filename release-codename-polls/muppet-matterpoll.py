@@ -7,7 +7,7 @@
 # release's poll.
 
 product="Meridian"
-version="2023.1.12"
+version="2023.1.13"
 criterion="Muppet"
 
 candidate_names = [
@@ -15,7 +15,6 @@ candidate_names = [
     "Animal",
     "Bert",
     "Big Bird",
-    "Elmo",
     "Ernie",
     "Floyd Pepper",
     "Fozzie Bear",
