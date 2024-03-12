@@ -9,7 +9,7 @@ import random
 # release's poll.
 
 product="Horizon"
-version="33.0.0"
+version="33.0.2"
 criterion="tree"
 count=30
 
@@ -548,7 +548,6 @@ candidate_names = [
   "Ohio Buckeye",
   "Okame Cherry",
   "Oklahoma Redbud",
-  "Old Man's Beard",
   "Oleander",
   "Oleaster",
   "Olmsted Norway Maple",

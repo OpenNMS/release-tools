@@ -7,7 +7,7 @@
 # release's poll.
 
 product="Meridian"
-version="2023.1.13"
+version="2023.1.14"
 criterion="Muppet"
 
 candidate_names = [
@@ -31,7 +31,6 @@ candidate_names = [
     "Sam Eagle",
     "Scooter",
     "Sherlock Hemlock",
-    "Statler",
     "The Martians",
     "The Two-Headed Monster",
     "Waldorf",
