@@ -23,7 +23,7 @@ resource "azurerm_network_interface" "CoreVM" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.CoreVM.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.HorizonVMPubipaddr.id
+    public_ip_address_id          = azurerm_public_ip.CoreVMPubipaddr.id
   }
   tags = var.tags
 
@@ -93,10 +93,12 @@ resource "azurerm_network_security_group" "CoreVM" {
   tags = var.tags
 }
 
-resource "azurerm_public_ip" "HorizonVMPubipaddr" {
+resource "azurerm_public_ip" "CoreVMPubipaddr" {
   name                = "opennms-bm-hvm-pubaddr"
   location            = azurerm_resource_group.CoreVM.location
   resource_group_name = azurerm_resource_group.CoreVM.name
   allocation_method   = "Static"
   tags                = var.tags
+  domain_name_label   = azurerm_resource_group.CoreVM.name
+
 }

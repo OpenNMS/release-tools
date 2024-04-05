@@ -1,5 +1,5 @@
 output "HorizonVM_public_Address" {
-  value = azurerm_public_ip.HorizonVMPubipaddr.ip_address
+  value = azurerm_public_ip.CoreVMPubipaddr.ip_address
 }
 
 output "VM_Nodes_ipAddress" {
