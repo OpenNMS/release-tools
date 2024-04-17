@@ -7,7 +7,7 @@
 # release's poll.
 
 product="Meridian"
-version="2023.1.14"
+version="2023.1.15"
 criterion="Muppet"
 
 candidate_names = [
