@@ -9,7 +9,7 @@ import random
 # release's poll.
 
 product="Horizon"
-version="33.0.3"
+version="33.1.4"
 criterion="tree"
 count=30
 
@@ -45,7 +45,6 @@ candidate_names = [
   "Amur Corktree",
   "Amur Maackia",
   "Amur Maple",
-  "Anacahuita",
   "Angustifolia Dahoon Holly",
   "Apple Hawthorn",
   "Apple Serviceberry",
@@ -245,7 +244,6 @@ candidate_names = [
   "Desert Palm",
   "Desert Willow",
   "Devil's Walkingstick",
-  "Devilwood",
   "Diamond Leaf Oak",
   "Dissectum Atropurpureum Japanese Maple",
   "Double-Flowering Plum",
@@ -486,7 +484,6 @@ candidate_names = [
   "Majestic Beauty Southern Magnolia",
   "Malayan Dwarf Coconut Palm",
   "Manchurian Cherry",
-  "Mango",
   "Manila Palm",
   "Marshall's Seedless Green Ash",
   "May Hawthorn",
@@ -585,11 +582,9 @@ candidate_names = [
   "Pindo Palm",
   "Pineapple Guava",
   "Pink Chimes Japanese Snowbell",
-  "Pink Powderpuff",
   "Pink Trumpet Tree",
   "Pink Trumpet Tree",
   "Pink-Flowering Dogwood",
-  "Pinkball",
   "Pinyon Pine",
   "Pissard Plum",
   "Pitch Apple",
@@ -874,7 +869,6 @@ candidate_names = [
   "Weeping Canadian Hemlock",
   "Weeping Chinese Elm",
   "Weeping Eastern Hemlock",
-  "Weeping European Beech",
   "Weeping Fig",
   "Weeping Higan Cherry",
   "Weeping Japanese Pagoda Tree",
