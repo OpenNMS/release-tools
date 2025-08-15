@@ -8,7 +8,7 @@ else
     exit 1
 fi
 
-echo "🔍 Detected major version: $rhel_major"
+echo "🔍 Detected version: $rhel_major"
 
 case "$rhel_major" in
     7)
@@ -18,6 +18,15 @@ case "$rhel_major" in
     8)
         echo "📦 Installing repo for RHEL 8..."
         dnf --color=never -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm
+
+        echo "📦 Installing Java 17 (workaround)"
+        dnf install --color=never -y openjdk-17-jdk
+
+        echo "📦 Installing Postgress"
+        dnf install --color=never -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+        dnf --color=never -qy module disable postgresql
+        dnf install --color=never -y postgresql13-server
+        /usr/pgsql-13/bin/postgresql-13-setup initdb
         ;;
     9)
         echo "📦 Installing repo for RHEL 9..."
@@ -33,13 +42,13 @@ echo "🔐 Import GPG Key"
 rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 
 echo "📦 Install OpenNMS"
-dnf -y install opennms
+dnf --color=never -y install opennms
 
 echo "📦 Install tree"
-dnf -y install tree
+dnf --color=never -y install tree
 
 echo "📂 List OpenNMS folder"
 tree /opt/opennms -L 1
 
 echo "📦 Get OpenNMS package information "
-dnf info opennms
+dnf --color=never info opennms
