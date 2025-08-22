@@ -50,7 +50,8 @@ class jira:
         self.credential_file_handler=configparser.ConfigParser()
         self.credential_file_handler.read(self.cred_file)
         self.base_auth=self.credential_file_handler.get("credentials","Authtoken")
-        self.auth = HTTPBasicAuth(self.credential_file_handler.get("credentials","Emailaddress"), self.credential_file_handler.get("credentials","Authtoken"))
+        # self.auth = HTTPBasicAuth(self.credential_file_handler.get("credentials","Emailaddress"), self.credential_file_handler.get("credentials","Authtoken"))
+        self.auth = (self.credential_file_handler.get("credentials","Emailaddress").replace('"',''), self.credential_file_handler.get("credentials","Authtoken").replace('"',''))
 
         self.connection_handler=web_connector.web_connector()
 
@@ -82,7 +83,7 @@ class jira:
         search_query=self.configuration_file_handler.get("Queries","issues_resolved_contain_next").replace("'","")
         
         params = {'maxResults':1000, 'jql':search_query}
-        _output=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","search"),param=params,header={"Content-Type":"application/json"},auth=self.auth)
+        _output=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","search"),param=params,headers={"Content-Type":"application/json"},auth=self.auth)
         data=_output.json()
 
         if os.path.exists(os.path.join(self.working_dir,"issues_withNextInFixedVersion.json")):
@@ -131,7 +132,7 @@ class jira:
 
         params = {'projectId':project_info['id'], 'maxResults':1000, 'jql':search_query}
 
-        _output=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","search"),param=params,header={"Content-Type":"application/json"},auth=self.auth)
+        _output=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","search"),param=params,header={"Content-Type":"application/json","Accept": "application/json"},auth=self.auth)
 
         if _output.status_code == 200:
             _output=_output.json()

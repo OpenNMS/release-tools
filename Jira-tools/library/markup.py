@@ -26,7 +26,7 @@ class markup_helper:
             else:
                 print(entry,entry["Summary"].strip())
 
-    def print_issues(self,filename,release="",output_filename=""):
+    def print_issues(self,filename,release="",output_filename="",show_output=True):
         meridian=False
         horizon=False
         with open(filename,"r") as f:
@@ -41,8 +41,9 @@ class markup_helper:
             
             break_down[issue_type].append(entry["fields"]["summary"].strip() +" (Issue https://issues.opennms.org/browse/"+entry["key"]+"["+entry["key"]+'])')
 
-        print("[[releasenotes-changelog-"+release+"]]")
-        print()
+        if show_output:
+            print("[[releasenotes-changelog-"+release+"]]")
+            print()
         if "Meridian" in release:
             release_year=int(release.split("-")[1].split(".")[0])
             meridian=True
@@ -54,19 +55,21 @@ class markup_helper:
             _tmp="="*4
         else:
             _tmp="="*2
-        print(_tmp+" Release "+release)
-        print()
-        print()
+        if show_output:
+            print(_tmp+" Release "+release)
+            print()
+            print()
         for entry in break_down:
             if (meridian and release_year<=2020) or (horizon and release_year<=29):
                 _tmp="="*5
             else:
                 _tmp="="*3
-            print(_tmp+" "+entry)
-            print()
-            for entry_2 in break_down[entry]:
-                print("*",entry_2)
-            print()
+            if show_output:
+                print(_tmp+" "+entry)
+                print()
+                for entry_2 in break_down[entry]:
+                    print("*",entry_2)
+                print()
 
         if output_filename:
             with open(output_filename,"w") as f:
