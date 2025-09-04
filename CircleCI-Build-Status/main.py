@@ -78,12 +78,22 @@ for category in BRANCHES:
 
             # 2. Get workflow
             WORKFLOW_ID=""
+
             workflows = handler.get(f"/pipeline/{PIPELINE_ID}/workflow")
+
             for item in workflows["items"]:
                 WORKFLOW_ID=item["id"]
                 OVERALL_STATUS[f"{category}"][f"{a}"][f"{b}"]["workflow"]=item["status"]
                 break # get the first entry
+            
 
+            if OVERALL_STATUS[f"{category}"][f"{a}"][f"{b}"]["workflow"] in ["failed","failing"]:
+                if "jobs" not in OVERALL_STATUS[f"{category}"][f"{a}"][f"{b}"]:
+                    OVERALL_STATUS[f"{category}"][f"{a}"][f"{b}"]["jobs"]=[]
+                jobs=handler.get(f"/workflow/{WORKFLOW_ID}/job")
+                for job in jobs["items"]:
+                    if job["status"] in ["failed"]:
+                        OVERALL_STATUS[f"{category}"][f"{a}"][f"{b}"]["jobs"].append(job["name"])
 
 # Save a copy of the overall status
 if not os.path.exists("workarea"):

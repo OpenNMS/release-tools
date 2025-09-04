@@ -60,7 +60,7 @@ def get_icon(workflow_status,output_target: Literal["console", "markdown"]="cons
 def mattermost_text(data):
     OUTPUT=""
     OUTPUT+="| Branch | Status | Notes |\n"
-    OUTPUT+="|----------|:--------:|---------:|\n"
+    OUTPUT+="|----------|:--------:|:---------|\n"
     for e in data:
         OUTPUT+=f"|:building_construction:  **{e}:** |         |         |\n"
         for b in data[e]:
@@ -68,7 +68,15 @@ def mattermost_text(data):
                 STATUS=get_icon(data[e][b]["workflow"],"markdown")
                 NOTES=""
                 if data[e][b]["workflow"] in ["failed","failing","cancelled"]:
-                    NOTES=data[e][b]["workflow"]
+                    if "jobs" in data[e][b]:
+                        if len(data[e][b]["jobs"])>1:
+                            NOTES="The following jobs have failed: "
+                        else:
+                            NOTES="The following job has failed: "
+                        for j in data[e][b]["jobs"]:
+                            NOTES+=f"* {j} "
+                    else:
+                        NOTES=data[e][b]["workflow"]
                 elif data[e][b]["workflow"] in ["running"]:
                     NOTES=data[e][b]["workflow"]
 
@@ -79,7 +87,16 @@ def mattermost_text(data):
                     STATUS=get_icon(data[e][b][z]["workflow"],"markdown")
                     NOTES=""
                     if data[e][b][z]["workflow"] in ["failed","failing","cancelled"]:
-                        NOTES=data[e][b][z]["workflow"]
+                        if "jobs" in data[e][b][z]:
+                            if len(data[e][b][z]["jobs"])>1:
+                                NOTES="The folowing jobs have failed: "
+                            else:
+                                NOTES="The folowing job has failed: "
+
+                            for j in data[e][b][z]["jobs"]:
+                                NOTES+=f"* {j} "
+                        else:
+                            NOTES=data[e][b][z]["workflow"]
                     elif data[e][b][z]["workflow"] in ["running"]:
                         NOTES=data[e][b][z]["workflow"]
                     OUTPUT+=f"|&nbsp;&nbsp;:herb:  {z}     |  {STATUS}   |  {NOTES}   |\n"
