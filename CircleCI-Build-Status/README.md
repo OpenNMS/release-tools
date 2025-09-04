@@ -1,5 +1,5 @@
 # CircleCI Build Status
-Gathers and prints the status of CircleCI Pipelines.
+Gathers and reports the status of CircleCI Pipelines.
 
 ## Requirements:
 * Python3
