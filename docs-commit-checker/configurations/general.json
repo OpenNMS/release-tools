@@ -1,0 +1,11 @@
+{
+    "repository_url": "https://github.com/OpenNMS/opennms.git",
+    "branches": [
+        "foundation-2021",
+        "foundation-2022",
+        "foundation-2023",
+        "foundation-2024",
+        "release-34.x",
+        "develop"
+    ]
+}

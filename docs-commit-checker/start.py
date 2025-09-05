@@ -5,9 +5,13 @@ import json
 import logging
 from pathlib import Path
 from git import Repo
+import json
 
 from helpers.helpers import compare_checksum_files,checksum_folder,get_latest_branch_file
 
+
+with open(os.path.join("configurations","general.json"),"r") as fp:
+    CONFIGURATION=json.load(fp)
 
 if not os.path.exists("reports"):
     os.mkdir("reports")
@@ -25,8 +29,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ==== Configuration ====
-REPO_URL = "https://github.com/OpenNMS/opennms.git"
-BRANCHES = ["foundation-2021","foundation-2022","foundation-2023","foundation-2024","release-34.x", "develop"]  # List of branches to check
+
+REPO_URL = CONFIGURATION["repository_url"] # "https://github.com/OpenNMS/opennms.git"
+BRANCHES = CONFIGURATION["branches"] # ["foundation-2021","foundation-2022","foundation-2023","foundation-2024","release-34.x", "develop"]  # List of branches to check
 HISTORY_FILE = os.path.join("reports","history.json")
 LOCAL_REPO_DIR = "./repo"  # Where to clone/fetch the repo
 
@@ -57,8 +62,6 @@ for branch in BRANCHES:
     logger.info(f"Checking branch: {branch}")
     repo.git.checkout(branch)
     repo.remotes.origin.pull(branch)
-
-    # 
 
     last_seen = history.get(branch)
     if last_seen:
