@@ -34,24 +34,20 @@
             "master"
         ],
         "poweredby-2023": [
-            "master",
-            "master-docker-poweredby-2023"
+            "master"
         ],
         "poweredby-2024": [
-            "master",
-            "master-docker-poweredby-2024"
+            "master"
         ]
     },
     "Plugins": {
         "opennms-integration-api": [
-            "master",
             "release-1.x"
         ],
         "opennms-js": [
             "develop"
         ],
         "grafana-plugin": [
-            "master",
             "develop",
             "release-9.x"
         ],
