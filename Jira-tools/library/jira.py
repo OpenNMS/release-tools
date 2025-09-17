@@ -106,12 +106,9 @@ class jira:
     
     def getFixedIssuesWithMissingVersion(self):
         search_query=self.configuration_file_handler.get("Queries","issues_resolved_contain_next").replace("'","")
-
+        
         params = {'maxResults':1000, 'jql':search_query}
-        _output=self.connection_handler.get(
-            self.base_url + self.configuration_file_handler.get("URLs","search"),
-            param=params, headers={"Content-Type":"application/json"}, auth=self.auth
-        )
+        _output=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","search"),param=params,headers={"Content-Type":"application/json"},auth=self.auth)
         data=_output.json()
 
         # Merge child issues of epics
@@ -164,15 +161,25 @@ class jira:
 
         search_query=self.configuration_file_handler.get("Queries","fixed_issues").replace("'","").replace("#release_info#",release_info["name"])
 
-        params = {'projectId':project_info['id'], 'maxResults':1000, 'jql':search_query}
-
-        _output=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","search"),param=params,header={"Content-Type":"application/json","Accept": "application/json"},auth=self.auth)
-
+        import json
+        payload = {
+            "jql": search_query,
+            "maxResults": 1000,
+            "fields": ["key", "summary", "issuetype", "status", "assignee"]
+        }
+        url = self.base_url + self.configuration_file_handler.get("URLs", "search")
+        _output = self.connection_handler.post(
+            url,
+            data=json.dumps(payload),
+            header={"Content-Type": "application/json"},
+            auth=self.auth
+        )
         if _output.status_code == 200:
-            _output=_output.json()
-            self.file_library.save_json(os.path.join(self.working_dir,filename),_output)
+            _output = _output.json()
+            self.file_library.save_json(os.path.join(self.working_dir, filename), _output)
         else:
-            self.log.error("JIRA","Unable to fixed issue list ("+str(_output.status_code)+")")
+            print("DEBUG Jira response:", _output.text)
+            self.log.error("JIRA", "Unable to fixed issue list ("+str(_output.status_code)+")")
             return
 
         return {"Operation":"Success","Filename":filename}
@@ -213,7 +220,8 @@ class jira:
         url = self.base_url + "/rest/api/3/search/jql"
         payload = {
             "jql": search_query,
-            "fields": ["key", "summary"] # return key + name
+            "maxResults": 50,
+            "fields": ["key", "summary", "status", "issuetype", "assignee"]
         }
 
         _output = self.connection_handler.post(
@@ -224,8 +232,10 @@ class jira:
         )
 
         if _output.status_code == 200:
-            _output = _output.json()
-            self.file_library.save_json(os.path.join(self.working_dir, filename), _output)
+            raw = _output.json()
+            self.file_library.save_json(os.path.join(self.working_dir, filename), raw)
+            return {"Operation": "Success", "Filename": filename}
         else:
-            self.log.error("JIRA", "Unable to get your items(" + str(_output.status_code) + ")")
+            print(_output.text)  # show Jira error message
+            self.log.error("JIRA", f"Unable to get your items ({_output.status_code})")
             return
