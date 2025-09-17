@@ -1,0 +1,23 @@
+version: 2.1
+
+jobs:
+  run-circleci-build-status:
+    docker:
+      image: cimg/base:current
+    steps:
+      - checkout
+      - run:
+          name: "Setup custom environment variables"
+          command: |
+           cd CircleCI-Build-Status
+           pip install -r requirements.txt
+           ./start.sh
+
+
+workflows:
+  report-build-status:
+    jobs:
+      - run-circleci-build-status:
+          context: 
+            - CircleCI
+            - DevOpsStatusWebhook
