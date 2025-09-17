@@ -40,16 +40,33 @@ class markup_helper:
                 continue
 
             summary = entry["fields"]["summary"].strip()
-            # rewrite CVE-style issues → "Update <lib> library"
+
+            # --- CVE-style issues → "Update <lib> library" ---
             m = re.match(r"CVE-\d{4}-\d+\s*\(([^)]+)\)", summary)
             if m:
                 summary = f"Update {m.group(1)} library"
 
-            # rewrite Trivy Bug vulnerabilities → "Update <lib> library"
+            # --- Trivy Bug: Vulnerabilities in <lib> ---
             t = re.search(r"Vulnerabilities in\s+([^\s\]]+)", summary)
             if t:
                 summary = f"Update {t.group(1)} library"
 
+            # --- Trivy Bug: Library <lib> ---
+            lib = re.search(r"Trivy Bug:\s*Library\s+([^\s]+)", summary)
+            if lib:
+                summary = f"Update {lib.group(1)} library"
+
+            # --- Trivy Bug: (Vuln ID: CVE-xxxx-xxxx): <lib>: ---
+            vuln = re.search(r"Trivy Bug:\s*\(Vuln ID:\s*CVE-\d{4}-\d+\):\s*([a-zA-Z0-9._\-:]+)", summary)
+            if vuln:
+                summary = f"Update {vuln.group(1)} library"
+
+            # --- Trivy Bug: <lib>: <details> ---
+            bug = re.match(r"Trivy Bug:\s*([a-zA-Z0-9._\-:]+):", summary)
+            if bug:
+                summary = f"Update {bug.group(1)} library"
+
+            # Put into breakdown
             issue_type = entry["fields"]["issuetype"]["name"]
             if issue_type not in break_down:
                 break_down[issue_type] = {}
