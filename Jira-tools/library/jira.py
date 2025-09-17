@@ -107,9 +107,20 @@ class jira:
     def getFixedIssuesWithMissingVersion(self):
         search_query=self.configuration_file_handler.get("Queries","issues_resolved_contain_next").replace("'","")
         
-        params = {'maxResults':1000, 'jql':search_query}
-        _output=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","search"),param=params,headers={"Content-Type":"application/json"},auth=self.auth)
-        data=_output.json()
+        import json
+        payload = {
+            "jql": search_query,
+            "maxResults": 1000,
+            "fields": ["key","summary","issuetype","status","assignee"]
+        }
+        url = self.base_url + self.configuration_file_handler.get("URLs","search")
+        _output = self.connection_handler.post(
+            url,
+            data=json.dumps(payload),
+            header={"Content-Type": "application/json"},
+            auth=self.auth
+        )
+        data = _output.json()
 
         # Merge child issues of epics
         all_issues = data.get('issues', [])
@@ -122,7 +133,8 @@ class jira:
         if extra_children:
             all_issues.extend(extra_children)
             data['issues'] = all_issues
-        return data
+        self.file_library.save_json(os.path.join(self.working_dir, "issues_withNextInFixedVersion.json"), data)
+        return len(data.get("issues", []))
 
     def getFixedIssues(self,release_name,project_name,filename="fixedIssues"):
         if os.path.exists(self.release_path):
