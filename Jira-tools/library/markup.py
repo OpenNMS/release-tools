@@ -34,12 +34,24 @@ class markup_helper:
 
         break_down={}
         
+        import re
         for entry in data["issues"]:
-            issue_type=entry["fields"]["issuetype"]["name"]
-            if  issue_type not in break_down:
-                break_down[issue_type]=[]
-            
-            break_down[issue_type].append(entry["fields"]["summary"].strip() +" (Issue https://issues.opennms.org/browse/"+entry["key"]+"["+entry["key"]+'])')
+            if entry["key"].startswith("MPLUG"):
+                continue
+
+            summary = entry["fields"]["summary"].strip()
+            # rewrite CVE-style issues → "Update <lib> library"
+            m = re.match(r"CVE-\d{4}-\d+\s*\(([^)]+)\)", summary)
+            if m:
+                summary = f"Update {m.group(1)} library"
+
+            issue_type = entry["fields"]["issuetype"]["name"]
+            if issue_type not in break_down:
+                break_down[issue_type] = []
+
+            break_down[issue_type].append(
+                summary + " (Issue https://issues.opennms.org/browse/" + entry["key"] + "[" + entry["key"] + "])"
+            )
 
         if show_output:
             print("[[releasenotes-changelog-"+release+"]]")
