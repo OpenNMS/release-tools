@@ -11,16 +11,11 @@ jobs:
           command: |
            sudo apt update
            sudo apt install -y python3-pip python3-requests
-
       - run:
           name: "Report status"
           command: |
            cd release-tools/CircleCI-Build-Status
            python3 main.py -m
-      - run:
-          name: "Store artifacts"
-          command: |
-            
       - store_artifacts:
           path: release-tools/CircleCI-Build-Status/workarea
 
