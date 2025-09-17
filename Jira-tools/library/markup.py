@@ -45,13 +45,30 @@ class markup_helper:
             if m:
                 summary = f"Update {m.group(1)} library"
 
+            # rewrite Trivy Bug vulnerabilities → "Update <lib> library"
+            t = re.search(r"Vulnerabilities in\s+([^\s\]]+)", summary)
+            if t:
+                summary = f"Update {t.group(1)} library"
+
             issue_type = entry["fields"]["issuetype"]["name"]
             if issue_type not in break_down:
-                break_down[issue_type] = []
+                break_down[issue_type] = {}
 
-            break_down[issue_type].append(
-                summary + " (Issue https://issues.opennms.org/browse/" + entry["key"] + "[" + entry["key"] + "])"
-            )
+            # Merge duplicates: if summary already exists, append issue key
+            if summary in break_down[issue_type]:
+                break_down[issue_type][summary].append(entry["key"])
+            else:
+                break_down[issue_type][summary] = [entry["key"]]
+
+        # Rebuild with merged issue links
+        for issue_type in break_down:
+            formatted_entries = []
+            for summary, keys in break_down[issue_type].items():
+                issues_text = "".join(
+                    f"(Issue https://issues.opennms.org/browse/{k}[{k}])" for k in keys
+                )
+                formatted_entries.append(f"{summary} {issues_text}")
+            break_down[issue_type] = formatted_entries
 
         if show_output:
             print("[[releasenotes-changelog-"+release+"]]")
