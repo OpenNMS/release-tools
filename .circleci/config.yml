@@ -14,10 +14,10 @@ jobs:
       - run:
           name: "Report status"
           command: |
-           cd project/CircleCI-Build-Status
+           cd /home/circleci/project/CircleCI-Build-Status
            python3 main.py -m
       - store_artifacts:
-          path: project/CircleCI-Build-Status/workarea
+          path: /home/circleci/project/CircleCI-Build-Status/workarea
 
 workflows:
   report-build-status:
