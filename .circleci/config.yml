@@ -7,12 +7,22 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Setup custom environment variables"
+          name: "Install dependencies"
           command: |
-           cd CircleCI-Build-Status
-           pip install -r requirements.txt
-           ./start.sh
+           sudo apt update
+           sudo apt install -y python3-pip python3-requests
 
+      - run:
+          name: "Report status"
+          command: |
+           cd release-tools/CircleCI-Build-Status
+           python3 main.py -m
+      - run:
+          name: "Store artifacts"
+          command: |
+            
+      - store_artifacts:
+          path: release-tools/CircleCI-Build-Status/workarea
 
 workflows:
   report-build-status:
