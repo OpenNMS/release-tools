@@ -54,7 +54,7 @@ class markup_helper:
             if issue_type not in break_down:
                 break_down[issue_type] = {}
 
-            # Merge duplicates: if summary already exists, append issue key
+            # Merge duplicates by summary
             if summary in break_down[issue_type]:
                 break_down[issue_type][summary].append(entry["key"])
             else:
@@ -64,9 +64,13 @@ class markup_helper:
         for issue_type in break_down:
             formatted_entries = []
             for summary, keys in break_down[issue_type].items():
-                issues_text = "".join(
-                    f"(Issue https://issues.opennms.org/browse/{k}[{k}])" for k in keys
-                )
+                if len(keys) == 1:
+                    issues_text = f"(Issue https://issues.opennms.org/browse/{keys[0]}[{keys[0]}])"
+                else:
+                    links = ", ".join(
+                        f"https://issues.opennms.org/browse/{k}[{k}]" for k in keys
+                    )
+                    issues_text = f"(Issues {links})"
                 formatted_entries.append(f"{summary} {issues_text}")
             break_down[issue_type] = formatted_entries
 
