@@ -41,10 +41,6 @@ class markup_helper:
 
             summary = entry["fields"]["summary"].strip()
 
-            # --- Skip IPFIX Telemetry POC issues completely ---
-            if summary.startswith("IPFIX Telemetry POC:"):
-                continue
-
             # --- CVE-style issues → "Update <lib> library" ---
             m = re.match(r"CVE-\d{4}-\d+\s*\(([^)]+)\)", summary)
             if m:
