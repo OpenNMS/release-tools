@@ -105,15 +105,21 @@ def mattermost_text(data):
     return OUTPUT
 
 
-def getProperty(property_name):
-    if os.getenv(property_name):
-        OUTPUT=os.getenv(property_name)
-    elif os.path.exists(".env"):
-        with open(".env","r") as fp:
-            env_file=json.load(fp)
-        if property_name in env_file:
-            OUTPUT=env_file[property_name]
-    else:
-        print(f"{property_name} is missing! Exiting...")
-        sys.exit(1)
-    return OUTPUT
+def getProperty(*property_names):
+    # Check environment variables first
+    for name in property_names:
+        value = os.getenv(name)
+        if value:
+            return value
+
+    # Then check .env file if it exists
+    if os.path.exists(".env"):
+        with open(".env", "r") as fp:
+            env_file = json.load(fp)
+        for name in property_names:
+            if name in env_file:
+                return env_file[name]
+
+    # If none found, exit with error
+    print(f"None of the properties {property_names} were found! Exiting...")
+    sys.exit(1)
