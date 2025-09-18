@@ -12,8 +12,10 @@ parse.add_argument("--releasesWithInfo","-ri",action='store_true',help="Retrieve
 parse.add_argument("--projects","-p",action='store_true',help="Retrieve and update the projects file")
 parse.add_argument("--checkInvalidVersion","-ivv",action='store_true',help="Check for issue(s) that contain value Next in their fixed version")
 parse.add_argument("--myitems","-me",action='store_true',help="Get Items assigned to me that are not resolved")
+parse.add_argument("--epic","-e",default="",help="Epic key to fetch child issues")
 
 args=parse.parse_args()
+epicKey=args.epic
 
 checkInvalidVersion=args.checkInvalidVersion
 Version=args.version
@@ -55,3 +57,9 @@ if Version:
 if getMyItems:
     jira_handler.getMyItems()
     markup_library.print(filename=os.path.join(Working_dir,"myItems.json"),prefix="*")
+
+if epicKey:
+    children = jira_handler.get_issues_under_epic(epicKey)
+    print(f"Child issues under Epic {epicKey}:")
+    for c in children:
+        print(f"{c['key']} - {c['fields']['summary']}")

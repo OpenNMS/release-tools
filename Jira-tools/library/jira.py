@@ -51,7 +51,11 @@ class jira:
         self.credential_file_handler.read(self.cred_file)
         self.base_auth=self.credential_file_handler.get("credentials","Authtoken")
         # self.auth = HTTPBasicAuth(self.credential_file_handler.get("credentials","Emailaddress"), self.credential_file_handler.get("credentials","Authtoken"))
-        self.auth = (self.credential_file_handler.get("credentials","Emailaddress").replace('"',''), self.credential_file_handler.get("credentials","Authtoken").replace('"',''))
+        # self.auth = (self.credential_file_handler.get("credentials","Emailaddress").replace('"',''), self.credential_file_handler.get("credentials","Authtoken").replace('"',''))
+        self.auth = HTTPBasicAuth(
+            self.credential_file_handler.get("credentials","Emailaddress").replace('"',''),
+            self.credential_file_handler.get("credentials","Authtoken").replace('"','')
+            )
 
         self.connection_handler=web_connector.web_connector()
 
@@ -78,20 +82,51 @@ class jira:
         else:
             self.log.error("JIRA","Unable to retrieve project list ("+str(_request.status_code)+")")
             return
-        
+    def get_issues_under_epic(self, epic_key):
+        url = f"{self.base_url}/rest/agile/1.0/epic/{epic_key}/issue"
+        resp = self.connection_handler.get(
+            url, header={"Content-Type": "application/json"}, auth=self.auth
+        )
+        if resp.status_code == 200:
+            return resp.json().get('issues', [])
+        else:
+            # fallback: JQL on Epic Link field
+            epic_link_field = self.configuration_file_handler.get(
+                "Fields", "epic_link_field", fallback="Epic Link"
+            )
+            jql = f'"{epic_link_field}" = {epic_key}'
+            params = {'maxResults': 1000, 'jql': jql}
+            fallback_resp = self.connection_handler.get(
+                self.base_url + self.configuration_file_handler.get("URLs","search"),
+                param=params, header={"Content-Type":"application/json"}, auth=self.auth
+            )
+            if fallback_resp.status_code == 200:
+                return fallback_resp.json().get('issues', [])
+            return []
+    
     def getFixedIssuesWithMissingVersion(self):
-        search_query=self.configuration_file_handler.get("Queries","issues_resolved_contain_next").replace("'","")
+        search_query = self.configuration_file_handler.get("Queries", "issues_resolved_contain_next").replace("'", "")
         
-        params = {'maxResults':1000, 'jql':search_query}
-        _output=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","search"),param=params,headers={"Content-Type":"application/json"},auth=self.auth)
-        data=_output.json()
-
-        if os.path.exists(os.path.join(self.working_dir,"issues_withNextInFixedVersion.json")):
-            os.remove(os.path.join(self.working_dir,"issues_withNextInFixedVersion.json"))
-
-        if _output.status_code == 200:
-            self.file_library.save_json(os.path.join(self.working_dir,"issues_withNextInFixedVersion.json"),data)
-        return len(data['issues'])
+        import json
+        payload = {
+            "jql": search_query,
+            "maxResults": 1000,
+            "fields": ["key", "summary", "issuetype", "status", "assignee"]
+        }
+        url = self.base_url + self.configuration_file_handler.get("URLs", "search")
+        _output = self.connection_handler.post(
+            url,
+            data=json.dumps(payload),
+            header={"Content-Type": "application/json"},
+            auth=self.auth
+        )
+        data = _output.json()
+    
+        self.file_library.save_json(
+            os.path.join(self.working_dir, "issues_withNextInFixedVersion.json"), 
+            data
+        )
+        return len(data.get("issues", []))
 
     def getFixedIssues(self,release_name,project_name,filename="fixedIssues"):
         if os.path.exists(self.release_path):
@@ -130,15 +165,25 @@ class jira:
 
         search_query=self.configuration_file_handler.get("Queries","fixed_issues").replace("'","").replace("#release_info#",release_info["name"])
 
-        params = {'projectId':project_info['id'], 'maxResults':1000, 'jql':search_query}
-
-        _output=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","search"),param=params,header={"Content-Type":"application/json","Accept": "application/json"},auth=self.auth)
-
+        import json
+        payload = {
+            "jql": search_query,
+            "maxResults": 1000,
+            "fields": ["key", "summary", "issuetype", "status", "assignee"]
+        }
+        url = self.base_url + self.configuration_file_handler.get("URLs", "search")
+        _output = self.connection_handler.post(
+            url,
+            data=json.dumps(payload),
+            header={"Content-Type": "application/json"},
+            auth=self.auth
+        )
         if _output.status_code == 200:
-            _output=_output.json()
-            self.file_library.save_json(os.path.join(self.working_dir,filename),_output)
+            _output = _output.json()
+            self.file_library.save_json(os.path.join(self.working_dir, filename), _output)
         else:
-            self.log.error("JIRA","Unable to fixed issue list ("+str(_output.status_code)+")")
+            print("DEBUG Jira response:", _output.text)
+            self.log.error("JIRA", "Unable to fixed issue list ("+str(_output.status_code)+")")
             return
 
         return {"Operation":"Success","Filename":filename}
@@ -172,16 +217,29 @@ class jira:
             return
     
     def getMyItems(self):
-        filename="myItems.json"
-        search_query=self.configuration_file_handler.get("Queries","my_items").replace("'","")
-        params = {'maxResults':1000, 'jql':search_query}
-        _output=self.connection_handler.get(self.base_url+self.configuration_file_handler.get("URLs","search"),param=params,header={"Content-Type":"application/json"},auth=self.auth)
+        import json
+        filename = "myItems.json"
+        search_query = self.configuration_file_handler.get("Queries", "my_items").replace("'", "")
+
+        url = self.base_url + "/rest/api/3/search/jql"
+        payload = {
+            "jql": search_query,
+            "maxResults": 50,
+            "fields": ["key", "summary", "status", "issuetype", "assignee"]
+        }
+
+        _output = self.connection_handler.post(
+            url,
+            data=json.dumps(payload),
+            header={"Accept": "application/json", "Content-Type": "application/json"},
+            auth=self.auth
+        )
+
         if _output.status_code == 200:
-            _output=_output.json()
-            self.file_library.save_json(os.path.join(self.working_dir,filename),_output)
+            raw = _output.json()
+            self.file_library.save_json(os.path.join(self.working_dir, filename), raw)
+            return {"Operation": "Success", "Filename": filename}
         else:
-            self.log.error("JIRA","Unable to get your items("+str(_output.status_code)+")")
+            print(_output.text)  # show Jira error message
+            self.log.error("JIRA", f"Unable to get your items ({_output.status_code})")
             return
-
-
-     
