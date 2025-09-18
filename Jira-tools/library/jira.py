@@ -105,15 +105,15 @@ class jira:
             return []
     
     def getFixedIssuesWithMissingVersion(self):
-        search_query=self.configuration_file_handler.get("Queries","issues_resolved_contain_next").replace("'","")
+        search_query = self.configuration_file_handler.get("Queries", "issues_resolved_contain_next").replace("'", "")
         
         import json
         payload = {
             "jql": search_query,
             "maxResults": 1000,
-            "fields": ["key","summary","issuetype","status","assignee"]
+            "fields": ["key", "summary", "issuetype", "status", "assignee"]
         }
-        url = self.base_url + self.configuration_file_handler.get("URLs","search")
+        url = self.base_url + self.configuration_file_handler.get("URLs", "search")
         _output = self.connection_handler.post(
             url,
             data=json.dumps(payload),
@@ -121,19 +121,11 @@ class jira:
             auth=self.auth
         )
         data = _output.json()
-
-        # Merge child issues of epics
-        all_issues = data.get('issues', [])
-        extra_children = []
-        for issue in all_issues:
-            if issue['fields'].get('issuetype', {}).get('name') == 'Epic':
-                epic_key = issue['key']
-                children = self.get_issues_under_epic(epic_key)
-                extra_children.extend(children)
-        if extra_children:
-            all_issues.extend(extra_children)
-            data['issues'] = all_issues
-        self.file_library.save_json(os.path.join(self.working_dir, "issues_withNextInFixedVersion.json"), data)
+    
+        self.file_library.save_json(
+            os.path.join(self.working_dir, "issues_withNextInFixedVersion.json"), 
+            data
+        )
         return len(data.get("issues", []))
 
     def getFixedIssues(self,release_name,project_name,filename="fixedIssues"):

@@ -11,7 +11,7 @@ You need create an API Token. See `https://support.atlassian.com/atlassian-accou
 - Retrieve the fixed items for a release
 - (Additional Item) Get list of unresolved items assigned to the current user
 - A copy of the information shown on screen is saved under 'workspace' directory in either json,csv or txt format
-- Retrieve all child issues under an Epic (automatically merged into results when generating changelogs, or via --epic CLI flag)
+- Retrieve all child issues under an Epic
 
 ## Usage:
 ```
