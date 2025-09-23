@@ -132,5 +132,21 @@ class markup_helper:
                     for entry_2 in break_down[entry]:
                         f.write("* "+entry_2+"\n")
                     f.write("\n")
-                    
-                    
+
+    def print_closed_issues(self, filename, prefix="*"):
+        import json
+        with open(filename, "r") as f:
+            data = json.load(f)
+    
+        issues = data.get("invalid_closed_issues", [])
+        if not issues:
+            print("✅ All closed issues have fixVersion and GitHub references.")
+            return
+    
+        print("❌ Closed issues with problems:")
+        for issue in issues:
+            key = issue.get("key", "UNKNOWN")
+            summary = issue.get("fields", {}).get("summary", "")
+            reason = issue.get("check_error", "Unknown error")
+            print(f"{prefix} {key}: {summary} → {reason}")
+    

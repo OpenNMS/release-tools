@@ -13,6 +13,7 @@ parse.add_argument("--projects","-p",action='store_true',help="Retrieve and upda
 parse.add_argument("--checkInvalidVersion","-ivv",action='store_true',help="Check for issue(s) that contain value Next in their fixed version")
 parse.add_argument("--myitems","-me",action='store_true',help="Get Items assigned to me that are not resolved")
 parse.add_argument("--epic","-e",default="",help="Epic key to fetch child issues")
+parse.add_argument("--checkClosedIssues","-cci",action='store_true',help="Check closed issues have fixVersion and exist in GitHub")
 
 args=parse.parse_args()
 epicKey=args.epic
@@ -23,7 +24,7 @@ getReleasesWithInfo=args.releasesWithInfo
 getReleases=args.releases
 getProjects=args.projects
 getMyItems=args.myitems
-
+checkClosedIssues=args.checkClosedIssues
 
 Working_dir="workspace/"+Version
 
@@ -63,3 +64,9 @@ if epicKey:
     print(f"Child issues under Epic {epicKey}:")
     for c in children:
         print(f"{c['key']} - {c['fields']['summary']}")
+
+if checkClosedIssues:
+    count = jira_handler.checkClosedIssues()
+    markup_library.print_closed_issues(
+        filename=os.path.join(Working_dir, "closedIssues.json")
+    )

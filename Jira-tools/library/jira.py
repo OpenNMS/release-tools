@@ -57,6 +57,13 @@ class jira:
             self.credential_file_handler.get("credentials","Authtoken").replace('"','')
             )
 
+        if self.credential_file_handler.has_section("github"):
+            self.github_token = self.credential_file_handler.get("github", "token", fallback="")
+            self.github_repo  = self.credential_file_handler.get("github", "repo",  fallback="")
+        else:
+            self.github_token = ""
+            self.github_repo  = ""
+ 
         self.connection_handler=web_connector.web_connector()
 
     def getUserInfo(self):
@@ -243,3 +250,49 @@ class jira:
             print(_output.text)  # show Jira error message
             self.log.error("JIRA", f"Unable to get your items ({_output.status_code})")
             return
+        
+    def checkClosedIssues(self):
+        import json, requests
+        filename = "closedIssues.json"
+        search_query = 'project = NMS AND statusCategory = Done ORDER BY updated DESC'
+        url = self.base_url + "/rest/api/3/search/jql"
+        payload = {
+            "jql": search_query,
+            "maxResults": 200,
+            "fields": ["key", "summary", "fixVersions", "status"]
+        }
+
+        resp = self.connection_handler.post(
+            url,
+            data=json.dumps(payload),
+            header={"Accept": "application/json", "Content-Type": "application/json"},
+            auth=self.auth
+        )
+
+        invalid = []
+        if resp.status_code == 200:
+            data = resp.json()
+            for issue in data.get("issues", []):
+                fix_versions = issue["fields"].get("fixVersions", [])
+                if not fix_versions:
+                    issue["check_error"] = "Missing fixVersion"
+                    invalid.append(issue)
+                else:
+                    # Optional: GitHub check
+                    if self.github_repo and self.github_token:
+                        headers = {
+                            "Authorization": f"token {self.github_token}",
+                            "Accept": "application/vnd.github.cloak-preview"
+                        }
+                        gh_url = f"https://api.github.com/search/commits?q={issue['key']}+repo:{self.github_repo}"
+                        r = requests.get(gh_url, headers=headers)
+                        if r.status_code == 200 and r.json().get("total_count", 0) == 0:
+                            issue["check_error"] = "Not found in GitHub"
+                            invalid.append(issue)
+
+            self.file_library.save_json(os.path.join(self.working_dir, filename),
+                                        {"invalid_closed_issues": invalid})
+            return len(invalid)
+        else:
+            self.log.error("JIRA", f"Unable to check closed issues ({resp.status_code})")
+            return 0
