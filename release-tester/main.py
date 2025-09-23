@@ -62,9 +62,8 @@ def main():
             REPOSITORY_URL = REPOSITORY_URL.replace(
                 "REPO_USER", "$MERIDIAN_USERNAME"
             ).replace("REPO_PASS", "$MERIDIAN_PASSWORD")
-            LOGGER.info("main", f"  REPO: {REPOSITORY_URL}")
+            LOGGER.debug("main", f"  REPO: {REPOSITORY_URL}")
             OS_IMAGE = GENERIC_CONFIGURATIONS["Operating Systems"][OS][VERSION]
-            LOGGER.info("main", f"   OS Image: {OS_IMAGE}")
 
             if OS == "rpm":
                 SCRIPT = "rpm.sh"
@@ -83,87 +82,94 @@ def main():
                 try:
                     # Restrict permissions (owner read/write only)
                     os.chmod(tmp_path, 0o600)
-                    container = Docker.create_container(
-                        image_name=OS_IMAGE[0],
-                        container_name="test",
-                        container_volumes={
-                            os.path.abspath("./templates/rpm.sh"): {
-                                "bind": "/rpm.sh",
-                                "mode": "ro",  # read-only inside container
-                            }
-                        },
-                        detach=True,
-                        env_file_path=tmp_path,
-                        container_command=f"/rpm.sh -p {PRODUCT} -v {VERSION} -r {REPOSITORY_URL} ",
-                    )
-                    container.start()
-                    waiting = container.wait()
-                    exit_code = waiting["StatusCode"]
-                    output_logs = container.logs().decode("utf-8")
-                    LOGGER.info("main", f"Container exited with code {exit_code}")
 
-                    with open(
-                        f"workarea/{PRODUCT}_{productVersion}_{OS}_{VERSION}.txt", "w"
-                    ) as fp:
-                        fp.write(output_logs)
+                    for os_name_tag in OS_IMAGE:
+                        LOGGER.info("main", f"   OS Image: {os_name_tag}")
+                        os_name_tag_string=os_name_tag.split(":")[0].replace("/","_")
+                        container = Docker.create_container(
+                            image_name=os_name_tag,
+                            container_name=f"{PRODUCT}_{productVersion}_{OS}_{VERSION}_{os_name_tag_string}",
+                            container_volumes={
+                                os.path.abspath("./templates/rpm.sh"): {
+                                    "bind": "/rpm.sh",
+                                    "mode": "ro",  # read-only inside container
+                                }
+                            },
+                            detach=True,
+                            env_file_path=tmp_path,
+                            container_command=f"/rpm.sh -p {PRODUCT} -v {VERSION} -r {REPOSITORY_URL} ",
+                        )
+                        container.start()
+                        waiting = container.wait()
+                        exit_code = waiting["StatusCode"]
+                        output_logs = container.logs().decode("utf-8")
+                        LOGGER.info("main", f"Container exited with code {exit_code}")
 
-                    with open(
-                        f"workarea/{PRODUCT}_{productVersion}_{OS}_{VERSION}.txt", "r"
-                    ) as fp:
-                        output_logs = fp.readlines()
+                        with open(
+                            f"workarea/{PRODUCT}_{productVersion}_{OS}_{VERSION}_{os_name_tag_string}.txt", "w"
+                        ) as fp:
+                            fp.write(output_logs)
 
-                    installed_versions = Common.parse_packages(output_logs)
-                    with open(
-                        f"workarea/{PRODUCT}_{productVersion}_{OS}_{VERSION}_installed_packages.json",
-                        "w",
-                    ) as fp:
-                        json.dump(installed_versions, fp, indent=4)
+                        with open(
+                            f"workarea/{PRODUCT}_{productVersion}_{OS}_{VERSION}_{os_name_tag_string}.txt", "r"
+                        ) as fp:
+                            output_logs = fp.readlines()
 
-                    container.stop()
-                    container.remove(force=True)
+                        installed_versions = Common.parse_packages(output_logs)
+                        with open(
+                            f"workarea/{PRODUCT}_{productVersion}_{OS}_{VERSION}_{os_name_tag_string}_installed_packages.json",
+                            "w",
+                        ) as fp:
+                            json.dump(installed_versions, fp, indent=4)
+
+                        container.stop()
+                        container.remove(force=True)
 
                 finally:
                     # Remove the temp file after use
                     os.remove(tmp_path)
 
             elif PRODUCT == "horizon":
-                container = Docker.create_container(
-                    image_name=OS_IMAGE[0],
-                    container_name="test",
-                    container_volumes={
-                        os.path.abspath(f"./templates/{SCRIPT}"): {
-                            "bind": f"/{SCRIPT}",
-                            "mode": "ro",  # read-only inside container
-                        }
-                    },
-                    detach=True,
-                    container_command=f"/{SCRIPT} -p {PRODUCT} -v {VERSION} -r {REPOSITORY_URL} ",
-                )
-                container.start()
-                waiting = container.wait()
-                exit_code = waiting["StatusCode"]
-                output_logs = container.logs().decode("utf-8")
-                LOGGER.info("main", f"Container exited with code {exit_code}")
+                    for os_name_tag in OS_IMAGE:
+                        LOGGER.info("main", f"   OS Image: {os_name_tag}")
+                        os_name_tag_string=os_name_tag.split(":")[0].replace("/","_")
+                        container = Docker.create_container(
+                            image_name=os_name_tag,
+                            container_name=f"{PRODUCT}_{productVersion}_{OS}_{VERSION}_{os_name_tag_string}",
+                            container_volumes={
+                                os.path.abspath(f"./templates/{SCRIPT}"): {
+                                    "bind": f"/{SCRIPT}",
+                                    "mode": "ro",  # read-only inside container
+                                }
+                            },
+                            detach=True,
+                            container_command=f"/{SCRIPT} -p {PRODUCT} -v {VERSION} -r {REPOSITORY_URL} ",
+                        )
+                        container.start()
+                        waiting = container.wait()
+                        exit_code = waiting["StatusCode"]
+                        output_logs = container.logs().decode("utf-8")
+                        LOGGER.info("main", f"Container exited with code {exit_code}")
 
-                with open(
-                    f"workarea/{PRODUCT}_{productVersion}_{OS}_{VERSION}.txt", "w"
-                ) as fp:
-                    fp.write(output_logs)
+                        with open(
+                            f"workarea/{PRODUCT}_{productVersion}_{OS}_{VERSION}_{os_name_tag_string}.txt", "w"
+                        ) as fp:
+                            fp.write(output_logs)
 
-                with open(
-                    f"workarea/{PRODUCT}_{productVersion}_{OS}_{VERSION}.txt", "r"
-                ) as fp:
-                    output_logs = fp.readlines()
+                        with open(
+                            f"workarea/{PRODUCT}_{productVersion}_{OS}_{VERSION}_{os_name_tag_string}.txt", "r"
+                        ) as fp:
+                            output_logs = fp.readlines()
 
-                installed_versions = Common.parse_packages(output_logs)
-                with open(
-                    f"workarea/{PRODUCT}_{productVersion}_{OS}_{VERSION}_installed_packages.json",
-                    "w",
-                ) as fp:
-                    json.dump(installed_versions, fp, indent=4)
+                        installed_versions = Common.parse_packages(output_logs)
+                        with open(
+                            f"workarea/{PRODUCT}_{productVersion}_{OS}_{VERSION}_{os_name_tag_string}_installed_packages.json",
+                            "w",
+                        ) as fp:
+                            json.dump(installed_versions, fp, indent=4)
 
-                container.stop()
-                container.remove(force=True)
+                        container.stop()
+                        container.remove(force=True)
 
 
 if __name__ == "__main__":
