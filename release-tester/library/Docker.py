@@ -2,6 +2,7 @@ import docker
 import sys
 from library import Log
 from pathlib import Path
+import platform
 from dotenv import dotenv_values
 
 LOGGER = Log.Log()
@@ -10,6 +11,16 @@ LOGGER = Log.Log()
 ##
 # Docker
 ##
+def get_platform():
+    os_name = platform.system()
+    arch = platform.machine()
+
+    if os_name == "Darwin" and arch == "arm64":
+        return "linux/amd64"
+
+    # Default fallback
+    return None
+
 def get_client():
     try:
         docker_client = docker.from_env()
@@ -55,27 +66,41 @@ def create_container(
             environment_variables = merged_envs
         else:
             LOGGER.warning(f".env file not found at {env_file_path}")
+  
+    kwargs={
+        "image":image_name,
+        "name":container_name,
+        "environment":environment_variables,
+        "ports":ports,
+        "command":container_command,
+        "links":container_link,
+        "volumes":container_volumes,
+        "detach":detach,
+        "extra_hosts":extra_hosts
+    }
+    platform=get_platform()
+    if platform:
+        kwargs["platform"]=platform
 
     # Check if image exists locally
     docker_images = docker_client.images.list()
     image_exists = any(image_name in image.tags for image in docker_images)
 
     if not image_exists:
-        LOGGER.info("Docker - create_container",f"Pulling {image_name}...")
-        docker_client.images.pull(image_name)
+        tmp_args={
+            "repository":image_name,
+        }
+        if platform:
+            tmp_args["platform"]=platform
+            LOGGER.info("Docker - create_container",f"Pulling {image_name} (Platform: {platform})...")
+        else:
+            LOGGER.info("Docker - create_container",f"Pulling {image_name}...")
+        docker_client.images.pull(**tmp_args)
         LOGGER.info("Docker - create_container",f"Successfully pulled {image_name}!")
 
     # Create container
     container = docker_client.containers.create(
-        image=image_name,
-        name=container_name,
-        environment=environment_variables,
-        ports=ports,
-        command=container_command,
-        links=container_link,
-        volumes=container_volumes,
-        detach=detach,
-        extra_hosts=extra_hosts
+        **kwargs
     )
 
     # Attach to network if specified

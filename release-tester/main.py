@@ -51,7 +51,7 @@ def main():
     productVersion, productConfiguration = Common.getProductConfiguration(
         PRODUCT, VERSION
     )
-    LOGGER.info("main", f"VERSION:{productVersion}")
+    LOGGER.info("main", f"VERSION: {productVersion}")
     OS_TYPE = productConfiguration.keys()
     for OS in OS_TYPE:
         LOGGER.info("main", f"OS_TYPE: {OS}")
