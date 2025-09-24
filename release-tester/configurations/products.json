@@ -1,0 +1,38 @@
+{
+    "horizon": {
+        "latest": {
+            "rpm": {
+                "8": "https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm",
+                "9": "https://yum.opennms.org/repofiles/opennms-repo-stable-rhel9.noarch.rpm"
+            },
+            "deb": {
+                "debian": "https://debian.opennms.org",
+                "ubuntu": "https://debian.opennms.org"
+            }
+        }
+    },
+    "meridian": {
+        "2021": {
+            "rpm": {
+                "8": "https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/2021/stable/rhel8"
+            }
+        },
+        "2022": {
+            "rpm": {
+                "8": "https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/2022/stable/rhel8"
+            }
+        },
+        "2023": {
+            "rpm": {
+                "8": "https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/2023/stable/rhel8",
+                "9": "https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/2023/stable/rhel9"
+            }
+        },
+        "2024": {
+            "rpm": {
+                "8": "https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/2024/stable/rhel8",
+                "9": "https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/2024/stable/rhel9"
+            }
+        }
+    }
+}
