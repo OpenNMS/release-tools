@@ -148,5 +148,7 @@ class markup_helper:
             key = issue.get("key", "UNKNOWN")
             summary = issue.get("fields", {}).get("summary", "")
             reason = issue.get("check_error", "Unknown error")
-            print(f"{prefix} {key}: {summary} → {reason}")
-    
+            if reason.startswith("Duplicate of"):
+                print(f"{prefix} {key}: {summary} → {reason}")
+            else:
+                print(f"{prefix} {key}: {summary} → {reason}")

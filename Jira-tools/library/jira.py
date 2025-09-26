@@ -259,7 +259,7 @@ class jira:
         payload = {
             "jql": search_query,
             "maxResults": 200,
-            "fields": ["key", "summary", "fixVersions", "status"]
+            "fields": ["key", "summary", "fixVersions", "status", "issuelinks"]
         }
 
         resp = self.connection_handler.post(
@@ -274,7 +274,19 @@ class jira:
             data = resp.json()
             for issue in data.get("issues", []):
                 fix_versions = issue["fields"].get("fixVersions", [])
-                if not fix_versions:
+                links = issue["fields"].get("issuelinks", [])
+                
+                # Check duplicate links
+                duplicate_of = None
+                for l in links:
+                    if "type" in l and l["type"]["name"] == "Duplicate" and "outwardIssue" in l:
+                        duplicate_of = l["outwardIssue"]["key"]
+                        break
+                    
+                if duplicate_of:
+                    issue["check_error"] = f"Duplicate of {duplicate_of}"
+                    invalid.append(issue)
+                elif not fix_versions:
                     issue["check_error"] = "Missing fixVersion"
                     invalid.append(issue)
                 else:
