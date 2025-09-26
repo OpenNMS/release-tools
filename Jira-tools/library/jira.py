@@ -275,7 +275,7 @@ class jira:
             for issue in data.get("issues", []):
                 fix_versions = issue["fields"].get("fixVersions", [])
                 links = issue["fields"].get("issuelinks", [])
-                
+
                 # Check duplicate links
                 duplicate_of = None
                 for l in links:
@@ -294,13 +294,24 @@ class jira:
                     if self.github_repo and self.github_token:
                         headers = {
                             "Authorization": f"token {self.github_token}",
-                            "Accept": "application/vnd.github.cloak-preview"
+                            "Accept": "application/vnd.github+json"
                         }
-                        gh_url = f"https://api.github.com/search/commits?q={issue['key']}+repo:{self.github_repo}"
+                        gh_url = f"https://api.github.com/search/issues?q={issue['key']}+repo:{self.github_repo}+is:pr"
                         r = requests.get(gh_url, headers=headers)
-                        if r.status_code == 200 and r.json().get("total_count", 0) == 0:
-                            issue["check_error"] = "Not found in GitHub"
-                            invalid.append(issue)
+
+                        if r.status_code == 200:
+                            items = r.json().get("items", [])
+                            if not items:
+                                issue["check_error"] = "No PR found in GitHub"
+                                invalid.append(issue)
+                            else:
+                                pr = items[0]
+                                if pr.get("pull_request", {}).get("merged_at"):
+                                    # ✅ PR merged
+                                    pass
+                                else:
+                                    issue["check_error"] = "PR not merged"
+                                    invalid.append(issue)
 
             self.file_library.save_json(os.path.join(self.working_dir, filename),
                                         {"invalid_closed_issues": invalid})
