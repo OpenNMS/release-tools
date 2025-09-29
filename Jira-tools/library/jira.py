@@ -269,53 +269,70 @@ class jira:
             auth=self.auth
         )
 
-        invalid = []
+        categories = {
+            "Missing fixVersion": [],
+            "Duplicate": [],
+            "PR not merged": [],
+            "No PR found in GitHub": []
+        }
+
         if resp.status_code == 200:
             data = resp.json()
             for issue in data.get("issues", []):
+                key = issue["key"]
+                summary = issue["fields"].get("summary", "")
                 fix_versions = issue["fields"].get("fixVersions", [])
                 links = issue["fields"].get("issuelinks", [])
 
-                # Check duplicate links
+                # Check duplicates
                 duplicate_of = None
                 for l in links:
                     if "type" in l and l["type"]["name"] == "Duplicate" and "outwardIssue" in l:
                         duplicate_of = l["outwardIssue"]["key"]
                         break
-                    
+
                 if duplicate_of:
-                    issue["check_error"] = f"Duplicate of {duplicate_of}"
-                    invalid.append(issue)
+                    categories["Duplicate"].append(f"{key}: {summary} → Duplicate of {duplicate_of}")
                 elif not fix_versions:
-                    issue["check_error"] = "Missing fixVersion"
-                    invalid.append(issue)
+                    categories["Missing fixVersion"].append(f"{key}: {summary}")
                 else:
-                    # Optional: GitHub check
+                    # GitHub PR check
                     if self.github_repo and self.github_token:
                         headers = {
                             "Authorization": f"token {self.github_token}",
                             "Accept": "application/vnd.github+json"
                         }
-                        gh_url = f"https://api.github.com/search/issues?q={issue['key']}+repo:{self.github_repo}+is:pr"
+                        gh_url = f"https://api.github.com/search/issues?q={key}+repo:{self.github_repo}+is:pr"
                         r = requests.get(gh_url, headers=headers)
 
                         if r.status_code == 200:
                             items = r.json().get("items", [])
                             if not items:
-                                issue["check_error"] = "No PR found in GitHub"
-                                invalid.append(issue)
+                                categories["No PR found in GitHub"].append(f"{key}: {summary}")
                             else:
                                 pr = items[0]
                                 if pr.get("pull_request", {}).get("merged_at"):
-                                    # ✅ PR merged
+                                    # ✅ merged
                                     pass
                                 else:
-                                    issue["check_error"] = "PR not merged"
-                                    invalid.append(issue)
+                                    categories["PR not merged"].append(f"{key}: {summary}")
+                        else:
+                            categories["No PR found in GitHub"].append(f"{key}: {summary}")
 
-            self.file_library.save_json(os.path.join(self.working_dir, filename),
-                                        {"invalid_closed_issues": invalid})
-            return len(invalid)
+            # Save grouped results
+            self.file_library.save_json(
+                os.path.join(self.working_dir, filename),
+                categories
+            )
+
+            # Print nicely to console
+            for cat, items in categories.items():
+                if items:
+                    print(f"\n{cat}")
+                    for i in items:
+                        print(" *", i)
+
+            return sum(len(v) for v in categories.values())
         else:
             self.log.error("JIRA", f"Unable to check closed issues ({resp.status_code})")
             return 0

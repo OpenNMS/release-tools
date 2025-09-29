@@ -1,5 +1,6 @@
 
 import json 
+import os
 
 class markup_helper:
 
@@ -135,20 +136,27 @@ class markup_helper:
 
     def print_closed_issues(self, filename, prefix="*"):
         import json
+        if not os.path.exists(filename):
+            print("No closed issues file found")
+            return
+
         with open(filename, "r") as f:
             data = json.load(f)
-    
-        issues = data.get("invalid_closed_issues", [])
-        if not issues:
-            print("✅ All closed issues have fixVersion and GitHub references.")
+
+        grouped = data.get("invalid_closed_issues", {})
+
+        if not grouped:
+            print("✅ No invalid closed issues found")
             return
-    
+        else:
+            pass
+
         print("❌ Closed issues with problems:")
-        for issue in issues:
-            key = issue.get("key", "UNKNOWN")
-            summary = issue.get("fields", {}).get("summary", "")
-            reason = issue.get("check_error", "Unknown error")
-            if reason.startswith("Duplicate of"):
-                print(f"{prefix} {key}: {summary} → {reason}")
-            else:
-                print(f"{prefix} {key}: {summary} → {reason}")
+
+        for category, issues in grouped.items():
+            print(f"\n{category}")
+            for issue in issues:
+                key = issue.get("key")
+                summary = issue["fields"].get("summary", "")
+                error = issue.get("check_error", "")
+                print(f" {prefix} {key}: {summary} → {error}")
