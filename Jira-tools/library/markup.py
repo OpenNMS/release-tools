@@ -1,5 +1,6 @@
 
 import json 
+import os
 
 class markup_helper:
 
@@ -132,5 +133,30 @@ class markup_helper:
                     for entry_2 in break_down[entry]:
                         f.write("* "+entry_2+"\n")
                     f.write("\n")
-                    
-                    
+
+    def print_closed_issues(self, filename, prefix="*"):
+        import json
+        if not os.path.exists(filename):
+            print("No closed issues file found")
+            return
+
+        with open(filename, "r") as f:
+            data = json.load(f)
+
+        grouped = data.get("invalid_closed_issues", {})
+
+        if not grouped:
+            print("✅ No invalid closed issues found")
+            return
+        else:
+            pass
+
+        print("❌ Closed issues with problems:")
+
+        for category, issues in grouped.items():
+            print(f"\n{category}")
+            for issue in issues:
+                key = issue.get("key")
+                summary = issue["fields"].get("summary", "")
+                error = issue.get("check_error", "")
+                print(f" {prefix} {key}: {summary} → {error}")
