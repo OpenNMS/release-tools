@@ -8,7 +8,9 @@
             "foundation-2023",
             "merge-foundation/foundation-2023-to-foundation-2024",
             "foundation-2024",
-            "merge-foundation/foundation-2024-to-release-34.x",
+            "merge-foundation/foundation-2024-to-foundation-2025",
+            "foundation-2025",
+            "merge-foundation/foundation-2025-to-release-34.x",
             "release-34.x",
             "merge-foundation/release-34.x-to-develop",
             "develop"
@@ -23,7 +25,9 @@
             "from-foundation-2023",
             "release-2023.x",
             "from-foundation-2024",
-            "release-2024.x"
+            "release-2024.x",
+            "from-foundation-2025",
+            "release-2025.x"
         ]
     },
     "Powered-by": {
@@ -37,6 +41,9 @@
             "master"
         ],
         "poweredby-2024": [
+            "master"
+        ],
+        "poweredby-2025": [
             "master"
         ]
     },
