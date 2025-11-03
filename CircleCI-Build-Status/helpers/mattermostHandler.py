@@ -10,13 +10,16 @@ class MattermostHandler:
         self.channel = channel
         self.icon_url = icon_url
     
-    def post(self,message):
+    def post(self,message,footer=None):
         payload={
             "text":message,
             "username": self.username,
             "channel": self.channel,
             "icon_url": self.icon_url
         }
+
+        if footer:
+            payload["footer"]=footer
 
         response = requests.post(self.webhook_url, json=payload)
         if response.status_code == 200:
