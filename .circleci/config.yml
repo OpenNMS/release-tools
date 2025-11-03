@@ -15,7 +15,12 @@ jobs:
           name: "Report status"
           command: |
            cd /home/circleci/project/CircleCI-Build-Status
+           
+           # Report build status
            python3 main.py -m
+
+           # Report flaky testcases insights
+           python3 flaky_testcase_insights.py -m
       - store_artifacts:
           path: /home/circleci/project/CircleCI-Build-Status/workarea
 
