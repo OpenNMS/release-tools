@@ -1,0 +1,28 @@
+version: 2.1
+
+jobs:
+  run-circleci-build-status:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - run:
+          name: "Install dependencies"
+          command: |
+           sudo apt update
+           sudo apt install -y python3-pip python3-requests
+      - run:
+          name: "Report status"
+          command: |
+           cd /home/circleci/project/CircleCI-Build-Status
+           python3 main.py -m
+      - store_artifacts:
+          path: /home/circleci/project/CircleCI-Build-Status/workarea
+
+workflows:
+  report-build-status:
+    jobs:
+      - run-circleci-build-status:
+          context: 
+            - CircleCI
+            - DevOpsStatusWebhook

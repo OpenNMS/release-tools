@@ -1,5 +1,6 @@
 
 import json 
+import os
 
 class markup_helper:
 
@@ -26,7 +27,7 @@ class markup_helper:
             else:
                 print(entry,entry["Summary"].strip())
 
-    def print_issues(self,filename,release="",output_filename=""):
+    def print_issues(self,filename,release="",output_filename="",show_output=True):
         meridian=False
         horizon=False
         with open(filename,"r") as f:
@@ -34,15 +35,66 @@ class markup_helper:
 
         break_down={}
         
+        import re
         for entry in data["issues"]:
-            issue_type=entry["fields"]["issuetype"]["name"]
-            if  issue_type not in break_down:
-                break_down[issue_type]=[]
-            
-            break_down[issue_type].append(entry["fields"]["summary"].strip() +" (Issue https://issues.opennms.org/browse/"+entry["key"]+"["+entry["key"]+'])')
+            if entry["key"].startswith("MPLUG"):
+                continue
 
-        print("[[releasenotes-changelog-"+release+"]]")
-        print()
+            summary = entry["fields"]["summary"].strip()
+
+            # --- CVE-style issues → "Update <lib> library" ---
+            m = re.match(r"CVE-\d{4}-\d+\s*\(([^)]+)\)", summary)
+            if m:
+                summary = f"Update {m.group(1)} library"
+
+            # --- Trivy Bug: Vulnerabilities in <lib> ---
+            t = re.search(r"Vulnerabilities in\s+([^\s\]]+)", summary)
+            if t:
+                summary = f"Update {t.group(1)} library"
+
+            # --- Trivy Bug: Library <lib> ---
+            lib = re.search(r"Trivy Bug:\s*Library\s+([^\s]+)", summary)
+            if lib:
+                summary = f"Update {lib.group(1)} library"
+
+            # --- Trivy Bug: (Vuln ID: CVE-xxxx-xxxx): <lib>: ---
+            vuln = re.search(r"Trivy Bug:\s*\(Vuln ID:\s*CVE-\d{4}-\d+\):\s*([a-zA-Z0-9._\-:]+)", summary)
+            if vuln:
+                summary = f"Update {vuln.group(1)} library"
+
+            # --- Trivy Bug: <lib>: <details> ---
+            bug = re.match(r"Trivy Bug:\s*([a-zA-Z0-9._\-:]+):", summary)
+            if bug:
+                summary = f"Update {bug.group(1)} library"
+
+            # Put into breakdown
+            issue_type = entry["fields"]["issuetype"]["name"]
+            if issue_type not in break_down:
+                break_down[issue_type] = {}
+
+            # Merge duplicates by summary
+            if summary in break_down[issue_type]:
+                break_down[issue_type][summary].append(entry["key"])
+            else:
+                break_down[issue_type][summary] = [entry["key"]]
+
+        # Rebuild with merged issue links
+        for issue_type in break_down:
+            formatted_entries = []
+            for summary, keys in break_down[issue_type].items():
+                if len(keys) == 1:
+                    issues_text = f"(Issue https://issues.opennms.org/browse/{keys[0]}[{keys[0]}])"
+                else:
+                    links = ", ".join(
+                        f"https://issues.opennms.org/browse/{k}[{k}]" for k in keys
+                    )
+                    issues_text = f"(Issues {links})"
+                formatted_entries.append(f"{summary} {issues_text}")
+            break_down[issue_type] = formatted_entries
+
+        if show_output:
+            print("[[releasenotes-changelog-"+release+"]]")
+            print()
         if "Meridian" in release:
             release_year=int(release.split("-")[1].split(".")[0])
             meridian=True
@@ -54,19 +106,21 @@ class markup_helper:
             _tmp="="*4
         else:
             _tmp="="*2
-        print(_tmp+" Release "+release)
-        print()
-        print()
+        if show_output:
+            print(_tmp+" Release "+release)
+            print()
+            print()
         for entry in break_down:
             if (meridian and release_year<=2020) or (horizon and release_year<=29):
                 _tmp="="*5
             else:
                 _tmp="="*3
-            print(_tmp+" "+entry)
-            print()
-            for entry_2 in break_down[entry]:
-                print("*",entry_2)
-            print()
+            if show_output:
+                print(_tmp+" "+entry)
+                print()
+                for entry_2 in break_down[entry]:
+                    print("*",entry_2)
+                print()
 
         if output_filename:
             with open(output_filename,"w") as f:
@@ -79,5 +133,30 @@ class markup_helper:
                     for entry_2 in break_down[entry]:
                         f.write("* "+entry_2+"\n")
                     f.write("\n")
-                    
-                    
+
+    def print_closed_issues(self, filename, prefix="*"):
+        import json
+        if not os.path.exists(filename):
+            print("No closed issues file found")
+            return
+
+        with open(filename, "r") as f:
+            data = json.load(f)
+
+        grouped = data.get("invalid_closed_issues", {})
+
+        if not grouped:
+            print("✅ No invalid closed issues found")
+            return
+        else:
+            pass
+
+        print("❌ Closed issues with problems:")
+
+        for category, issues in grouped.items():
+            print(f"\n{category}")
+            for issue in issues:
+                key = issue.get("key")
+                summary = issue["fields"].get("summary", "")
+                error = issue.get("check_error", "")
+                print(f" {prefix} {key}: {summary} → {error}")

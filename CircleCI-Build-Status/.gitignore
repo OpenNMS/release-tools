@@ -1,0 +1,6 @@
+.env
+workarea
+__pycache__
+tmp
+tmp.txt
+.DS_STORE

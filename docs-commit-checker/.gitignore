@@ -1,0 +1,5 @@
+venv
+repo
+reports
+__pycache__
+.DS_Store

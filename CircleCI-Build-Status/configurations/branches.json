@@ -1,0 +1,72 @@
+{
+    "Horizon": {
+        "opennms": [
+            "foundation-2021",
+            "merge-foundation/foundation-2021-to-foundation-2022",
+            "foundation-2022",
+            "merge-foundation/foundation-2022-to-foundation-2023",
+            "foundation-2023",
+            "merge-foundation/foundation-2023-to-foundation-2024",
+            "foundation-2024",
+            "merge-foundation/foundation-2024-to-foundation-2025",
+            "foundation-2025",
+            "merge-foundation/foundation-2025-to-release-34.x",
+            "release-34.x",
+            "merge-foundation/release-34.x-to-develop",
+            "develop"
+        ]
+    },
+    "Meridian": {
+        "opennms-prime": [
+            "from-foundation-2021",
+            "release-2021.x",
+            "from-foundation-2022",
+            "release-2022.x",
+            "from-foundation-2023",
+            "release-2023.x",
+            "from-foundation-2024",
+            "release-2024.x",
+            "from-foundation-2025",
+            "release-2025.x"
+        ]
+    },
+    "Powered-by": {
+        "poweredby-2021": [
+            "master"
+        ],
+        "poweredby-2022": [
+            "master"
+        ],
+        "poweredby-2023": [
+            "master"
+        ],
+        "poweredby-2024": [
+            "master"
+        ],
+        "poweredby-2025": [
+            "master"
+        ]
+    },
+    "Plugins": {
+        "opennms-integration-api": [
+            "release-1.x"
+        ],
+        "opennms-js": [
+            "develop"
+        ],
+        "grafana-plugin": [
+            "develop",
+            "release-9.x",
+            "release-12.x"
+        ],
+        "alec": [
+            "develop",
+            "release-3.x"
+        ]
+    },
+    "Others": {
+        "docs.opennms.com": [
+            "master"
+        ]
+    }
+}

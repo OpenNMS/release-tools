@@ -1,0 +1,13 @@
+{
+    "Operating Systems":{
+        "rpm":{
+            "7":["centos:7"],
+            "8":["rockylinux:8","almalinux/8-base:latest"],
+            "9":["rockylinux:9","almalinux/9-base:latest"]
+        },
+        "deb":{
+            "debian":["debian:bookworm"],
+            "ubuntu":["ubuntu:latest"]
+        }
+    }
+}
