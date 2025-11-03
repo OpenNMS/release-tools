@@ -17,6 +17,37 @@ def display_icons(data, indent=0, prefix=""):
             full_key = f"{prefix}{key}"
             print(" " * indent + f"{full_key}: {value}")
 
+def flaky_testcase_data(data, max_chunk_size=4000):
+    """
+    Splits the flaky test case data into chunks that do not exceed max_chunk_size.
+    Each chunk is formatted as a markdown table.
+
+    Args:
+        data (list): List of flaky test case dictionaries.
+        max_chunk_size (int): Maximum size of each chunk in characters.
+    Returns:
+        list: List of markdown table strings, each not exceeding max_chunk_size.
+    """
+    HEADER = "## Flaky Tests\n| Test Name | Class Name | Job Name | Times Flaked  |\n"
+    HEADER += "|----------------|----------------|----------------|:--------------:|\n"
+    
+    chunks = []
+    current_chunk = HEADER
+    for test in data:
+        row = f"| {test.get('test_name','')} | {test.get('classname','')} | {test.get('job_name','')} |      {test.get('times_flaked','')}       |\n"
+        
+        # Check if adding this row exceeds the max_chunk_size
+        if len(current_chunk) + len(row) > max_chunk_size:
+            chunks.append(current_chunk)
+            current_chunk = HEADER + row  # Start new chunk with header
+        else:
+            current_chunk += row
+
+    if current_chunk.strip():  # Add last chunk if not empty
+        chunks.append(current_chunk)
+
+    return chunks
+
 
 def get_icon(workflow_status,output_target: Literal["console", "markdown"]="console"):
     if workflow_status == 'success':
