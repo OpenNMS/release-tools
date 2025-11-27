@@ -10,9 +10,9 @@
             "foundation-2024",
             "merge-foundation/foundation-2024-to-foundation-2025",
             "foundation-2025",
-            "merge-foundation/foundation-2025-to-release-34.x",
-            "release-34.x",
-            "merge-foundation/release-34.x-to-develop",
+            "merge-foundation/foundation-2025-to-release-35.x",
+            "release-35.x",
+            "merge-foundation/release-35.x-to-develop",
             "develop"
         ]
     },
