@@ -136,6 +136,7 @@ class jira:
         return len(data.get("issues", []))
 
     def getFixedIssues(self,release_name,project_name,filename="fixedIssues"):
+        print("There is a bug which prevents returning results past 100 items")
         if os.path.exists(self.release_path):
             release_data=self.file_library.load_json(self.release_path)
         else:
